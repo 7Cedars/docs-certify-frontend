@@ -1,26 +1,25 @@
 import React, { useContext } from "react";
-import { UserContext } from "./userContext";
+import { UserContext, Web3ModalContext } from "./userContext";
 import { Container, Header, Button, Icon } from "semantic-ui-react"; 
 import 'semantic-ui-css/semantic.min.css';
 
 function introText(title, body) {
+  
   return (
-    <Container text >
+    <Container text textAlign = 'center'>
           <Header
             size='large'
             content={title}
             style={{
-              textAlign: 'center',
               fontWeight: 'normal',
               marginBottom: 0,
-              marginTop: '3em',
+              marginTop: '1.5em',
             }}
           />
           <Header
             size='medium'
             content={body}
             style={{
-              textAlign: 'center',
               fontWeight: 'normal',
               marginTop: '1.5em',
               maxWidth: '50em'
@@ -33,11 +32,12 @@ function introText(title, body) {
 export function RenderTabs() {
 
     const {tab, setTab} = useContext(UserContext);
+     // const { connected, setConnected } = useContext(WalletConnected);
 
     // Home tab rendering 
     if (tab == 'Home') {
       return (     
-        <Container text textAlign='center'>
+        <Container text textAlign = 'center'>
         <Header
           as='h1'
           content='Certify.xyz' 
@@ -59,7 +59,10 @@ export function RenderTabs() {
             marginTop: '1.5em',
           }}
         />
-          <Button primary size='huge' textAlign='center' style={{ marginTop: '3rem'}}>
+          <Button primary size='huge' 
+            style={{ 
+              marginTop: '3rem'
+              }}>
           Check Authenticity
           <Icon name='right arrow' />
           </Button>
