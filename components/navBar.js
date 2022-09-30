@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext, Web3ModalContext } from "./userContext";
 import { Button, Icon, Menu } from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
@@ -7,43 +7,45 @@ import 'semantic-ui-css/semantic.min.css';
 export function NavBar() {
 
     const { tab, setTab } = useContext(UserContext);
-    const { walletConnected, getCertificate } = useContext(Web3ModalContext);
+    const { walletConnected, setRequestConnect, checkDocHash } = useContext(Web3ModalContext);
 
     const renderButton = () => {
+
+        let click = false 
+
         // If wallet is not connected, return a button which allows them to connect their wllet
         if (!walletConnected) {
+
           return (
-            <Button  primary onClick={() => getCertificate()} > 
+            <div> 
+            <Button  primary onClick={() => checkDocHash('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')} > 
+            test
+            </Button>
+            <Button  primary onClick={() => setRequestConnect(true)} > 
             Connect Wallet
             </Button>
-          );
-        }
-    
-        // If we are currently waiting for something, return a loading button
-        if (loading) {
-          return <button className={styles.button}>Loading...</button>;
-        }
-    
-        // If connected user is the owner, and presale hasnt started yet, allow them to start the presale
-        if (isOwner && !presaleStarted) {
-          return (
-            <button className={styles.button} onClick={startPresale}>
-              Start Presale!
-            </button>
-          );
-        }
-    
-        // If connected user is not the owner but presale hasn't started yet, tell them that
-        if (!presaleStarted) {
-          return (
-            <div>
-              <div className={styles.description}>Presale hasnt started!</div>
             </div>
           );
         }
+    
+        // If wallet is  connected, return a green button that states wallet connected. 
+        // Button does ntot have any functionality at the moment. 
+        if (walletConnected) {
+            return (
+                <div> 
+                <Button  primary onClick={() => checkDocHash('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')} > 
+                test
+                </Button>
+              <Button  positive > 
+              Wallet Connected
+              </Button>
+              </div>
+            );
+          }
+        }
 
     return (
-        <Menu tabular attached='top' size = 'large' stackable >
+        <Menu fixed='top' stackable >
             <Menu.Item 
                 name='Home'
                 active={tab === 'Home'}
@@ -75,9 +77,7 @@ export function NavBar() {
                 onClick={() => setTab('Certifications Received')}
             />
             <Menu.Item position = 'right'>
-                <Button  primary onClick={() => getCertificate()} > 
-                    Connect Wallet
-                </Button>
+                { renderButton() }
             </Menu.Item>
         </Menu>
     ); // // positive = { connected }
