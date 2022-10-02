@@ -8,31 +8,45 @@ import { callCertificate, checkRecipient } from "../pages/index"
 Part 1: Create dynamic components for tabs. 
 */
 
-const renderListCertificates  = (listCertificates) => {
+const renderListCertificates  = () => { // listCertificates
 
-  const item = [ 
-          {
-            header: 'None', 
-            meta: 'None', 
-            style: { overflowWrap: 'break-word' }
-          } ]
+  // const item = [ 
+  //         {
+  //           header: 'None', 
+  //           meta: 'None', 
+  //           style: { overflowWrap: 'break-word' }
+  //         } ]
 
-    if (listCertificates) 
-    {
-      const item = [ 
-        {
-          header: 'Some', 
-          meta: 'Some', 
-          style: { overflowWrap: 'break-word' }
-          // header: listCertificates[0].issuer, 
-          // meta: listCertificates[0].receiver, 
-          // style: { overflowWrap: 'break-word' }
-        }   
-      ] 
+  //   if (listCertificates) 
+  //   {
+  //     const item = [ 
+  //       {
+  //         header: 'Some', 
+  //         meta: 'Some', 
+  //         style: { overflowWrap: 'break-word' }
+  //         // header: listCertificates[0].issuer, 
+  //         // meta: listCertificates[0].receiver, 
+  //         // style: { overflowWrap: 'break-word' }
+  //       }   
+  //     ] 
 
-      }
+  //     }
   
-    return <Card.Group items={item} /> 
+  //   return <Card.Group items={item} /> 
+return (
+    <Container text textAlign = 'center'>
+    <Header
+      as='h1'
+      content='Rendered List' 
+      style={{
+        fontSize: '4em',
+        fontWeight: 'normal',
+        marginBottom: 0,
+        marginTop: '3em',
+      }}
+    />
+  </Container>
+)
 
   }
       
@@ -69,9 +83,12 @@ const renderListCertificates  = (listCertificates) => {
 Part 2: Create dynamic tabs.
 */
 
-export const landingPage = (tab) => {
+export const RenderFullPage = () => {
 
-    if (tab == 'Home') { 
+  const { tab } = useContext(UserContext);
+
+  
+  if (tab == 'Home') { 
 
     return (     
       <Container text textAlign = 'center'>
@@ -105,11 +122,9 @@ export const landingPage = (tab) => {
         </Button>
     </Container>
     ) 
-    }
-}
+  }
 
-export const aboutTab = (tab) => {
-    if (tab == 'About') { 
+  if (tab == 'About') { 
 
     return (
       <Container text textAlign = 'center'>
@@ -124,49 +139,85 @@ export const aboutTab = (tab) => {
         }}
       />
     </Container>
-
     )
   }
-} 
+}
 
+export const RenderLeftTab = () => {
 
-export const handleCheckRecipient = () => {
-  
   const { tab } = useContext(UserContext);
+
   const { 
-    address, 
+    userInput, 
     setListCertificates, 
     listCertificates, 
-    callCertificate, 
-    setAddress } = useContext(Web3ModalContext);
+    callCertificate,
+    checkRecipient,  
+    setUserInput } = useContext(Web3ModalContext);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); 
-
-    try {
-
-    const data = await (checkRecipient(address))
-    const certificates = [];
+  if (tab == 'DocHash_Certs') { 
+    return (    
+      <Container text textAlign = 'center'>
+      <Header
+        as='h1'
+        content='DocHash_Certs' 
+        style={{
+          fontSize: '4em',
+          fontWeight: 'normal',
+          marginBottom: 0,
+          marginTop: '3em',
+        }}
+      />
+    </Container>
   
-    // I think I can do this with a mapping... anyway. // this await is tricky with a mapping. 
-    for (let i = 0; i < data.length; i++) {
-      certificates.push(
-        await callCertificate( parseInt(data[i]) - 1)
-        );
-    }
-    
-    setListCertificates(certificates)
+    ) 
+  }
 
-    console.log ( listCertificates )
-
-  } catch (err) {
-      console.error(err);
-    }
+  if (tab == 'Issued_Certs') { 
+    return (    
+      <Container text textAlign = 'center'>
+      <Header
+        as='h1'
+        content='Issued_Certs' 
+        style={{
+          fontSize: '4em',
+          fontWeight: 'normal',
+          marginBottom: 0,
+          marginTop: '3em',
+        }}
+      />
+    </Container>
+  
+    ) 
   }
 
   if (tab == 'Received_Certs') { 
 
-    return (
+    const handleSubmit = async (e) => {
+      e.preventDefault(); 
+  
+      try {
+  
+      const data = await (checkRecipient(userInput))
+      const certificates = [];
+    
+      // I think I can do this with a mapping... anyway. // this await is tricky with a mapping. 
+      for (let i = 0; i < data.length; i++) {
+        certificates.push(
+          await callCertificate( parseInt(data[i]) - 1)
+          );
+        }
+        
+        setListCertificates(certificates)
+    
+        console.log ( listCertificates )
+    
+      } catch (err) {
+          console.error(err);
+        }
+      }
+
+    return (    
       <Container >
           <Segment placeholder textAlign = 'center' style={{
               marginBottom: '2.5em',
@@ -184,8 +235,8 @@ export const handleCheckRecipient = () => {
                     <input 
                       type ='text'
                       placeholder='Ethereum adress: 0x00...' 
-                      value={address}
-                      onChange ={(e) => address = (e.target.value)} 
+                      value={userInput}
+                      onChange ={(e) => setUserInput(e.target.value)} 
                       /> 
                   <Button primary  style={{
                       marginBottom: '2em',
@@ -203,156 +254,64 @@ export const handleCheckRecipient = () => {
               This unique identifier is uploaded to the Ethereum blockchain and used to 
               certify the document's authenticity. */}
           </Segment>
-        </Container> 
-        )
-     }
+        </Container>       
+    ) 
   }
 
-    // FROM HERE ON OLD! 
-
-
-function checkDocumentTab() {
-
-  return (
-    <Container>
-    <Grid padded>
-      <Grid.Column width = '8' > 
-         text
-      </Grid.Column> 
-        <Grid.Column width = '8'> 
-       text
-        </Grid.Column> 
-    </Grid>
+  if (tab == 'Certify') { 
+    return (    
+      <Container text textAlign = 'center'>
+      <Header
+        as='h1'
+        content='Certify' 
+        style={{
+          fontSize: '4em',
+          fontWeight: 'normal',
+          marginBottom: 0,
+          marginTop: '3em',
+        }}
+      />
     </Container>
-  )
+  
+    ) 
+  }
 }
 
-function certifyDocumentTab() {
-  return (
-    <Container text textAlign = 'center'>
-      About Tab.
-      Here some text about the app 
+export const RenderRigthTab = () => {
+
+  const { tab } = useContext(UserContext);
+
+  const { 
+    userInput, 
+    listCertificates,   
+    setUserInput } = useContext(Web3ModalContext);
+
+  if (tab == 'DocHash_Certs'||
+      tab == 'Issued_Certs'||
+      tab == 'Received_Certs' ) { 
+
+      return (
+        renderListCertificates() 
+        )
+  }
+
+  if (tab == 'Certify') { 
+    return (    
+      <Container text textAlign = 'center'>
+      <Header
+        as='h1'
+        content='Certify User input here.' 
+        style={{
+          fontSize: '4em',
+          fontWeight: 'normal',
+          marginBottom: 0,
+          marginTop: '3em',
+        }}
+      />
     </Container>
-  )
+  
+    ) 
+  }
 }
-
-function certificationsIssuedTab() {
-  return (
-    <Container text textAlign = 'center'>
-      About Tab.
-      Here some text about the app 
-    </Container>
-  )
-}
-
-
-/* 
-Part 3: Render tabs according to selection. 
-*/
-// export function RenderTabs() {
-
-//     const {tab, setTab} = useContext(UserContext);
-//     const { listCertificates, setListCertificates } = useContext(Web3ModalContext);
-
-    // useEffect(() => { 
-    //   renderListCertificates(listCertificates)
-    //   //   return () => {
-    //   //     setListCertificates()
-    //   // }
-    // }, [listCertificates]);
-
-     // const { connected, setConnected } = useContext(WalletConnected);
-
-    // Home tab rendering 
-    // if (tab == 'Home') {
-      
-    // }
-    
-  //   // About tab rendering 
-  //   if (tab == 'About') {  
-  //     return (
-  //       <div>
-  //       { introText(
-  //         'About', 
-  //         'This will give an extended explanation of the dapp later on. WIP' 
-  //         )}, 
-  //       { aboutTab() }
-  //       </div>
-  //     );
-  //   };
-
-  //   // Check Document tab rendering 
-  //   if (tab == 'Check Document') { 
-  //     return ( 
-  //       <div>
-  //       { introText(
-  //         'Check documents on authenticity', 
-  //         'Upload a document and check if a certificate of \
-  //         authenticity has been issued on the Ethereum Blockchain.'
-  //       )}, 
-  //       { checkDocumentTab() }
-  //       </div>
-  //     );
-  //   };
-
-  //   // Certify Document tab rendering 
-  //   if (tab == 'Certify Document') { 
-  //     return ( 
-  //       <div>
-  //       { introText(
-  //         'Certify Document', 
-  //         'Upload a document and issue a certificate of authenticity \
-  //         on the Ethereum Blockchain.'
-  //       )}, 
-  //       { certifyDocumentTab() }
-  //       </div>
-  //     );
-  //   };
-
-  //   // Certifications Issued tab rendering 
-  //   if (tab == 'Certifications Issued') { 
-  //     return ( 
-  //       <div>
-  //       { introText(
-  //         'Certifications Issued', 
-  //         'A list of certifications issued by this address.'
-  //       )}, 
-  //       { certificationsIssuedTab() }
-  //       </div>
-  //     );
-  //   };
-
-  //   // Certifications Received tab rendering 
-  //   if (tab == 'Certifications Received') { 
-  //     return ( 
-  //       <div>
-  //       { introText(
-  //         'Certifications Received', 
-  //         'A list of certifications received by this address.'
-  //       )}, 
-  //       <Container text textAlign = 'center'>
-  //       <Grid padded>
-  //         <Grid.Column width = '8' > 
-  //           { CheckRecipients() } 
-  //           </Grid.Column> 
-  //           <Grid.Column width = '8'> 
-  //           { renderListCertificates(listCertificates) }
-  //           </Grid.Column> 
-  //       </Grid>
-  //       </Container>
-  //       </div>
-  //     );
-  //   };
-
-  //   // Error tab rendering 
-  //   { 
-  //     return ( 
-  //       introText(
-  //         'ERROR', 
-  //         'No tab name recognized.')
-  //     );
-  //   };
-
-  // };
 
   // https://blog.logrocket.com/using-filereader-api-preview-images-react/

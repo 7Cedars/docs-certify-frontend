@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { UserContext, Web3ModalContext } from "../components/userContext";
-import { landingPage, aboutTab, handleCheckRecipient } from "../components/renderTabs";
+import { RenderFullPage, RenderLeftTab, RenderRigthTab } from "../components/renderTabs";
 import { NavBar } from "../components/navBar";
 import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
@@ -13,7 +13,7 @@ export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [requestConnect, setRequestConnect] = useState(false);
   const [listCertificates, setListCertificates] = useState();
-  const [address, setAddress] = useState('0x5B38Da6a701c568545dCfcB03FcB875f56beddC4');
+  const [userInput, setUserInput] = useState('');
   const web3ModalRef = useRef();
   // const imageType = /image\/(png|jpg|jpeg|pdf)/i;
   // const [file, setFile] = useState(null);
@@ -78,28 +78,21 @@ export default function Home() {
     }
   }, [requestConnect]);
 
-  // useEffect(() => {
-  //   renderListCertificates(listCertificates)
-  //   //   return () => {
-  //   //     setListCertificates()
-  //   // }
-  // }, [listCertificates]);
-
- const certify = async (docHash, address, description) => {
+ const certify = async (docHash, userInput, description) => {
     try {
       // get provider or signer.
       const provider = await getProviderOrSigner();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
-      const certificateIndex = await dcContract.certify(docHash, address, description);
+      const certificateIndex = await dcContract.certify(docHash, userInput, description);
       console.log(certificateIndex)
     } catch (err) {
       console.error(err.message);
     }
   }
 
-  const checkDocHash = async (_docHash) => {
+  const checkDocHash = async (userInput) => {
 
     try {
       // get provider or signer.
@@ -107,7 +100,7 @@ export default function Home() {
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
-      const certificateIndex = await dcContract.checkDocHash(_docHash);
+      const certificateIndex = await dcContract.checkDocHash(userInput);
 
       return certificateIndex
     } catch (err) {
@@ -115,28 +108,28 @@ export default function Home() {
     }
   }
 
-  const checkIssuer = async (address) => {
+  const checkIssuer = async (userInput) => {
     try {
       // get provider or signer.
       const provider = await getProviderOrSigner();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
-      const certificateIndex = await dcContract.checkIssuer(address);
+      const certificateIndex = await dcContract.checkIssuer(userInput);
       console.log(certificateIndex)
     } catch (err) {
       console.error(err.message);
     }
   }
 
-  const checkRecipient = async (address) => {
+  const checkRecipient = async (userInput) => {
     try {
       // get provider or signer.
       const provider = await getProviderOrSigner();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
-      const certificateIndex = await dcContract.checkRecipient(address);
+      const certificateIndex = await dcContract.checkRecipient(userInput);
 
       certificateIndex.keys
 
@@ -190,11 +183,13 @@ export default function Home() {
   // All functions above are made available to all nested components below.
   // Second user context communicates what tab is selected.
   
+  // useEffect(() => {
+  //   RenderFullPage
+  // }, [tab]); 
+
   useEffect(() => {
-    landingPage
-    aboutTab 
-    handleCheckRecipient 
-  }, [tab]); 
+    RenderRigthTab 
+  }, [listCertificates]); 
   
   return (
       <div> 
@@ -202,29 +197,26 @@ export default function Home() {
         <Web3ModalContext.Provider value={{ 
           walletConnected, 
           setRequestConnect, 
-          address, 
-          setAddress,
+          userInput, 
+          setUserInput,
+          listCertificates, 
+          setListCertificates,
           certify, 
           checkDocHash,
           checkIssuer,
           checkRecipient,
           callCertificate,
           revokeCertificate
-
           }}>
         <NavBar />
-          <landingPage />
-          <aboutTab /> 
-        
+        <RenderFullPage />
           <Container>
-          <Grid padded>
-            <Grid.Column width = '8' > 
-             <handleCheckRecipient/> 
-        
-
-            </Grid.Column> 
+            <Grid padded>
+              <Grid.Column width = '8' > 
+                <RenderLeftTab />
+              </Grid.Column> 
               <Grid.Column width = '8'> 
-            text
+                <RenderRigthTab />
               </Grid.Column> 
           </Grid>
           </Container>
@@ -232,141 +224,7 @@ export default function Home() {
         </UserContext.Provider>
         </div>
       )
-
   } 
-
-
-
-
-//     if (tab == 'Home') {
-//       landingPage()
-//     }
-
-//     // About tab rendering 
-//     if (tab == 'About') {
-//       return (
-//         <div>
-//           {introText(
-//             'About',
-//             'This will give an extended explanation of the dapp later on. WIP'
-//           )},
-//           {aboutTab()}
-//         </div>
-//       );
-//     };
-
-//     // Check Document tab rendering 
-//     if (tab == 'Check Document') {
-//       return (
-//         <div>
-//           {introText(
-//             'Check documents on authenticity',
-//             'Upload a document and check if a certificate of \
-//         authenticity has been issued on the Ethereum Blockchain.'
-//           )},
-//           {checkDocumentTab()}
-//         </div>
-//       );
-//     };
-
-//     // Certify Document tab rendering 
-//     if (tab == 'Certify Document') {
-//       return (
-//         <div>
-//           {introText(
-//             'Certify Document',
-//             'Upload a document and issue a certificate of authenticity \
-//         on the Ethereum Blockchain.'
-//           )},
-//           {certifyDocumentTab()}
-//         </div>
-//       );
-//     };
-
-//     // Certifications Issued tab rendering 
-//     if (tab == 'Certifications Issued') {
-//       return (
-//         <div>
-//           {introText(
-//             'Certifications Issued',
-//             'A list of certifications issued by this address.'
-//           )},
-//           {certificationsIssuedTab()}
-//         </div>
-//       );
-//     };
-
-//     // Certifications Received tab rendering 
-//     if (tab == 'Certifications Received') {
-//       return (
-//         <div>
-//           {introText(
-//             'Certifications Received',
-//             'A list of certifications received by this address.'
-//           )},
-//           <Container text textAlign='center'>
-//             <Grid padded>
-//               <Grid.Column width='8' >
-//                 {CheckRecipients()}
-//               </Grid.Column>
-//               <Grid.Column width='8'>
-//                 {renderListCertificates(listCertificates)}
-//               </Grid.Column>
-//             </Grid>
-//           </Container>
-//         </div>
-//       );
-//     };
-
-//     // Error tab rendering 
-//     {
-//       return (
-//         introText(
-//           'ERROR',
-//           'No tab name recognized.')
-//       );
-//     };
-// )
-
-
-// <UserContext.Provider value={{ tab, setTab }}>
-//  { RenderTabs() }
-// </UserContext.Provider>
-
-
-// <Web3ModalContext.Provider value={{
-//   walletConnected,
-//   requestConnect,
-//   setRequestConnect,
-//   certify,
-//   checkDocHash,
-//   checkIssuer,
-//   checkRecipient,
-//   callCertificate,
-//   revokeCertificate,
-//   listCertificates,
-//   setListCertificates,
-//   address,
-//   setAddress
-//   // uploadHandler, 
-//   // fileDataURL,
-//   // setFileDataURL,
-//   // file, 
-//   // setFile
-// }}>
-//   <UserContext.Provider value={{ tab, setTab }}>
-
-//     <NavBar />
-
-
-
-
-//     <RenderTabs />
-
-//   </UserContext.Provider>
-// </Web3ModalContext.Provider> 
-//   );
-// }
 
 // References: 
 // <WalletConnected.Provider value={{ walletConnected, setWalletConnected }}> 
