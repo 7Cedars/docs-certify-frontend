@@ -18,9 +18,6 @@ export function NavBar() {
 
           return (
             <div> 
-            <Button  primary onClick={() => checkDocHash('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')} > 
-            test
-            </Button>
             <Button  primary onClick={() => setRequestConnect(true)} > 
             Connect Wallet
             </Button>
@@ -32,10 +29,7 @@ export function NavBar() {
         // Button does ntot have any functionality at the moment. 
         if (walletConnected) {
             return (
-                <div> 
-                <Button  primary onClick={() => checkDocHash('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')} > 
-                test
-                </Button>
+            <div> 
               <Button  positive > 
               Wallet Connected
               </Button>
@@ -59,22 +53,24 @@ export function NavBar() {
             <Menu.Item 
                 name='Check Document'
                 active={tab === 'Check Document'}
-                onClick={() => setTab('Check Document')}
+                onClick={() => setTab('DocHash_Certs')}
+            />
+
+            <Menu.Item 
+                name='Issued Certificates'
+                active={tab === 'Issued Certificates'}
+                onClick={() => setTab('Issued_Certs')}
             />
             <Menu.Item 
+                name='Received Certificates'
+                active={tab === 'Received Certificates'}
+                onClick={() => setTab('Received_Certs')}
+            />
+            <Menu.Item 
+                position = 'right'
                 name='Certify Document'
                 active={tab === 'Certify Document'}
-                onClick={() => setTab('Certify Document')}
-            />
-            <Menu.Item 
-                name='Certifications Issued'
-                active={tab === 'Certifications Issued'}
-                onClick={() => setTab('Certifications Issued')}
-            />
-            <Menu.Item 
-                name='Certifications Received'
-                active={tab === 'Certifications Received'}
-                onClick={() => setTab('Certifications Received')}
+                onClick={() => setTab('Certify')}
             />
             <Menu.Item position = 'right'>
                 { renderButton() }

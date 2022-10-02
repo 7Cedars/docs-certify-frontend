@@ -2,40 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext, Web3ModalContext } from "./userContext";
 import { Container, Header, Button, Icon, Segment, Form, Input, Grid, StepTitle, Card } from "semantic-ui-react"; 
 import 'semantic-ui-css/semantic.min.css';
+import { callCertificate, checkRecipient } from "../pages/index"
 
 /* 
 Part 1: Create dynamic components for tabs. 
 */
-
-
-// Intro text for pages.  
-function introText(title, body) {
-  
-  return (
-    <Container text textAlign = 'center'>
-          <Header
-            size='large'
-            content={title}
-            style={{
-              fontWeight: 'normal',
-              marginBottom: 0,
-              marginTop: '3.5em',
-            }}
-          />
-          <Header
-            size='medium'
-            content={body}
-            style={{
-              fontWeight: 'normal',
-              marginTop: '1.5em',
-              maxWidth: '50em'
-            }}
-          />
-        </Container>
-    )
-}
-
-
 
 const renderListCertificates  = (listCertificates) => {
 
@@ -94,14 +65,80 @@ const renderListCertificates  = (listCertificates) => {
     // </Card.Group>
     // </Segment>
 
-const CheckRecipients = () => {
+/* 
+Part 2: Create dynamic tabs.
+*/
+
+export const landingPage = (tab) => {
+
+    if (tab == 'Home') { 
+
+    return (     
+      <Container text textAlign = 'center'>
+      <Header
+        as='h1'
+        content='Certify.xyz' 
+        style={{
+          fontSize: '4em',
+          fontWeight: 'normal',
+          marginBottom: 0,
+          marginTop: '3em',
+        }}
+      />
+      <Header
+        as='h2'
+        content='Providing immutable certifications 
+        of documents’ authenticity. 
+        Built on the Ethereum blockchain.'
+        style={{
+          fontSize: '1.7em',
+          fontWeight: 'normal',
+          marginTop: '1.5em',
+        }}
+      />
+        <Button primary size='huge' 
+          style={{ 
+            marginTop: '3rem'
+            }}>
+        Check Authenticity
+        <Icon name='right arrow' />
+        </Button>
+    </Container>
+    ) 
+    }
+}
+
+export const aboutTab = (tab) => {
+    if (tab == 'About') { 
+
+    return (
+      <Container text textAlign = 'center'>
+      <Header
+        as='h1'
+        content='About section' 
+        style={{
+          fontSize: '4em',
+          fontWeight: 'normal',
+          marginBottom: 0,
+          marginTop: '3em',
+        }}
+      />
+    </Container>
+
+    )
+  }
+} 
+
+
+export const handleCheckRecipient = () => {
   
-  const { callCertificate, 
-    checkRecipient, 
+  const { tab } = useContext(UserContext);
+  const { 
+    address, 
     setListCertificates, 
     listCertificates, 
-    address, 
-    setAdress } = useContext(Web3ModalContext);
+    callCertificate, 
+    setAddress } = useContext(Web3ModalContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
@@ -127,6 +164,8 @@ const CheckRecipients = () => {
     }
   }
 
+  if (tab == 'Received_Certs') { 
+
     return (
       <Container >
           <Segment placeholder textAlign = 'center' style={{
@@ -146,7 +185,7 @@ const CheckRecipients = () => {
                       type ='text'
                       placeholder='Ethereum adress: 0x00...' 
                       value={address}
-                      onChange ={(e) => setAddress(e.target.value)} 
+                      onChange ={(e) => address = (e.target.value)} 
                       /> 
                   <Button primary  style={{
                       marginBottom: '2em',
@@ -166,21 +205,11 @@ const CheckRecipients = () => {
           </Segment>
         </Container> 
         )
-    }
+     }
+  }
 
-/* 
-Part 2: Create dynamic tabs.
-*/
-function aboutTab() {
-  return (
-    <Grid.Column> 
-      <Container text textAlign = 'center'>
-        About Tab.
-        Here some text about the app 
-      </Container>
-    </Grid.Column> 
-  )
-}
+    // FROM HERE ON OLD! 
+
 
 function checkDocumentTab() {
 
@@ -220,141 +249,110 @@ function certificationsIssuedTab() {
 /* 
 Part 3: Render tabs according to selection. 
 */
-export function RenderTabs() {
+// export function RenderTabs() {
 
-    const {tab, setTab} = useContext(UserContext);
-    const { listCertificates, setListCertificates } = useContext(Web3ModalContext);
+//     const {tab, setTab} = useContext(UserContext);
+//     const { listCertificates, setListCertificates } = useContext(Web3ModalContext);
 
-    useEffect(() => { 
-      renderListCertificates(listCertificates)
-      //   return () => {
-      //     setListCertificates()
-      // }
-    }, [listCertificates]);
+    // useEffect(() => { 
+    //   renderListCertificates(listCertificates)
+    //   //   return () => {
+    //   //     setListCertificates()
+    //   // }
+    // }, [listCertificates]);
 
      // const { connected, setConnected } = useContext(WalletConnected);
 
     // Home tab rendering 
-    if (tab == 'Home') {
-      return (     
-        <Container text textAlign = 'center'>
-        <Header
-          as='h1'
-          content='Certify.xyz' 
-          style={{
-            fontSize: '4em',
-            fontWeight: 'normal',
-            marginBottom: 0,
-            marginTop: '3em',
-          }}
-        />
-        <Header
-          as='h2'
-          content='Providing immutable certifications 
-          of documents’ authenticity. 
-          Built on the Ethereum blockchain.'
-          style={{
-            fontSize: '1.7em',
-            fontWeight: 'normal',
-            marginTop: '1.5em',
-          }}
-        />
-          <Button primary size='huge' 
-            style={{ 
-              marginTop: '3rem'
-              }}>
-          Check Authenticity
-          <Icon name='right arrow' />
-          </Button>
-      </Container>
-      ) 
-    }
+    // if (tab == 'Home') {
+      
+    // }
     
-    // About tab rendering 
-    if (tab == 'About') {  
-      return (
-        <div>
-        { introText(
-          'About', 
-          'This will give an extended explanation of the dapp later on. WIP' 
-          )}, 
-        { aboutTab() }
-        </div>
-      );
-    };
+  //   // About tab rendering 
+  //   if (tab == 'About') {  
+  //     return (
+  //       <div>
+  //       { introText(
+  //         'About', 
+  //         'This will give an extended explanation of the dapp later on. WIP' 
+  //         )}, 
+  //       { aboutTab() }
+  //       </div>
+  //     );
+  //   };
 
-    // Check Document tab rendering 
-    if (tab == 'Check Document') { 
-      return ( 
-        <div>
-        { introText(
-          'Check documents on authenticity', 
-          'Upload a document and check if a certificate of \
-          authenticity has been issued on the Ethereum Blockchain.'
-        )}, 
-        { checkDocumentTab() }
-        </div>
-      );
-    };
+  //   // Check Document tab rendering 
+  //   if (tab == 'Check Document') { 
+  //     return ( 
+  //       <div>
+  //       { introText(
+  //         'Check documents on authenticity', 
+  //         'Upload a document and check if a certificate of \
+  //         authenticity has been issued on the Ethereum Blockchain.'
+  //       )}, 
+  //       { checkDocumentTab() }
+  //       </div>
+  //     );
+  //   };
 
-    // Certify Document tab rendering 
-    if (tab == 'Certify Document') { 
-      return ( 
-        <div>
-        { introText(
-          'Certify Document', 
-          'Upload a document and issue a certificate of authenticity \
-          on the Ethereum Blockchain.'
-        )}, 
-        { certifyDocumentTab() }
-        </div>
-      );
-    };
+  //   // Certify Document tab rendering 
+  //   if (tab == 'Certify Document') { 
+  //     return ( 
+  //       <div>
+  //       { introText(
+  //         'Certify Document', 
+  //         'Upload a document and issue a certificate of authenticity \
+  //         on the Ethereum Blockchain.'
+  //       )}, 
+  //       { certifyDocumentTab() }
+  //       </div>
+  //     );
+  //   };
 
-    // Certifications Issued tab rendering 
-    if (tab == 'Certifications Issued') { 
-      return ( 
-        <div>
-        { introText(
-          'Certifications Issued', 
-          'A list of certifications issued by this address.'
-        )}, 
-        { certificationsIssuedTab() }
-        </div>
-      );
-    };
+  //   // Certifications Issued tab rendering 
+  //   if (tab == 'Certifications Issued') { 
+  //     return ( 
+  //       <div>
+  //       { introText(
+  //         'Certifications Issued', 
+  //         'A list of certifications issued by this address.'
+  //       )}, 
+  //       { certificationsIssuedTab() }
+  //       </div>
+  //     );
+  //   };
 
-    // Certifications Received tab rendering 
-    if (tab == 'Certifications Received') { 
-      return ( 
-        <div>
-        { introText(
-          'Certifications Received', 
-          'A list of certifications received by this address.'
-        )}, 
-        <Container text textAlign = 'center'>
-        <Grid padded>
-          <Grid.Column width = '8' > 
-            { CheckRecipients() } 
-            </Grid.Column> 
-            <Grid.Column width = '8'> 
-            { renderListCertificates(listCertificates) }
-            </Grid.Column> 
-        </Grid>
-        </Container>
-        </div>
-      );
-    };
+  //   // Certifications Received tab rendering 
+  //   if (tab == 'Certifications Received') { 
+  //     return ( 
+  //       <div>
+  //       { introText(
+  //         'Certifications Received', 
+  //         'A list of certifications received by this address.'
+  //       )}, 
+  //       <Container text textAlign = 'center'>
+  //       <Grid padded>
+  //         <Grid.Column width = '8' > 
+  //           { CheckRecipients() } 
+  //           </Grid.Column> 
+  //           <Grid.Column width = '8'> 
+  //           { renderListCertificates(listCertificates) }
+  //           </Grid.Column> 
+  //       </Grid>
+  //       </Container>
+  //       </div>
+  //     );
+  //   };
 
-    // Error tab rendering 
-    { 
-      return ( 
-        introText(
-          'ERROR', 
-          'No tab name recognized.')
-      );
-    };
+  //   // Error tab rendering 
+  //   { 
+  //     return ( 
+  //       introText(
+  //         'ERROR', 
+  //         'No tab name recognized.')
+  //     );
+  //   };
 
-  };
+  // };
 
-  // https://blog.logrocket.com/using-filereader-api-preview-images-react/ 
+  // https://blog.logrocket.com/using-filereader-api-preview-images-react/
