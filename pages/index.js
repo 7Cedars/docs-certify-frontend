@@ -5,19 +5,34 @@ import { NavBar } from "../components/navBar";
 import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
 import { Contract, providers, utils } from "ethers";
-import { Container, Header, Button, Icon, Segment, Form, Input, Grid, StepTitle, Card } from "semantic-ui-react"; 
+import { Container, Grid } from "semantic-ui-react"; 
+import { backgroundImage } from "../public/vercel.svg"
 
 export default function Home() {
 
   const [tab, setTab] = useState('Home');
   const [walletConnected, setWalletConnected] = useState(false);
   const [requestConnect, setRequestConnect] = useState(false);
-  const [listCertificates, setListCertificates] = useState();
+  const [certificatesArray, setCertificatesArray] = useState();
   const [userInput, setUserInput] = useState('');
   const web3ModalRef = useRef();
   // const imageType = /image\/(png|jpg|jpeg|pdf)/i;
   // const [file, setFile] = useState(null);
   // const [fileDataURL, setFileDataURL] = useState(null);
+  
+  // NB: SETTING BACKGROUND IMAGE SOMEHOW DOES NOT WORK YET... 
+  const style = {
+    backgroundImage: `url('${backgroundImage}')`,
+    height:'100vh',
+    marginTop:'-70px',
+    fontSize:'50px',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+  }
+
+  // document.body.style.backgroundColor = "red"; // THIS WORKS... 
+ //  document.body.style.backgroundImage = style; // BUT THIS DOES NOT?!... 
+  // NB: SETTING BACKGROUND IMAGE SOMEHOW DOES NOT WORK YET... 
 
   const getProviderOrSigner = async (needSigner = false) => {
     // Connect to Metamask
@@ -61,10 +76,6 @@ export default function Home() {
     }
   }, [walletConnected]);
 
-  // useEffect(() => {
-  //   renderPage()
-  // }, [tab]);
-
   useEffect(() => {
     if (requestConnect) {
       // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
@@ -86,7 +97,9 @@ export default function Home() {
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
       const certificateIndex = await dcContract.certify(docHash, userInput, description);
+
       console.log(certificateIndex)
+
     } catch (err) {
       console.error(err.message);
     }
@@ -103,6 +116,7 @@ export default function Home() {
       const certificateIndex = await dcContract.checkDocHash(userInput);
 
       return certificateIndex
+
     } catch (err) {
       console.error(err.message);
     }
@@ -116,7 +130,9 @@ export default function Home() {
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
       const certificateIndex = await dcContract.checkIssuer(userInput);
-      console.log(certificateIndex)
+
+      return certificateIndex
+
     } catch (err) {
       console.error(err.message);
     }
@@ -131,7 +147,7 @@ export default function Home() {
       // call function in contract. 
       const certificateIndex = await dcContract.checkRecipient(userInput);
 
-      certificateIndex.keys
+      // certificateIndex.keys
 
       return certificateIndex
 
@@ -149,13 +165,16 @@ export default function Home() {
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
       const data = await dcContract.callCertificate(index);
+      const dateTimeObj = new Date(parseInt(data[4] * 1000))
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
       const certificate = {
         id: index,
         docHash: data[0],
         issuer: data[1],
         recipient: data[2],
         description: data[3],
-        dateTime: data[4]
+        dateTime: `${dateTimeObj.getDay()} ${monthNames[(dateTimeObj.getMonth() + 1)]} ${dateTimeObj.getFullYear()}`
       }
 
       return (certificate)
@@ -183,24 +202,24 @@ export default function Home() {
   // All functions above are made available to all nested components below.
   // Second user context communicates what tab is selected.
   
-  // useEffect(() => {
-  //   RenderFullPage
-  // }, [tab]); 
+  useEffect(() => {
+    setCertificatesArray(null)
+  }, [tab]); 
 
   useEffect(() => {
-    RenderRigthTab 
-  }, [listCertificates]); 
+    RenderRigthTab  
+  }, [certificatesArray]); 
   
   return (
-      <div> 
+      <div > 
         <UserContext.Provider value={{ tab, setTab }}>
         <Web3ModalContext.Provider value={{ 
           walletConnected, 
           setRequestConnect, 
           userInput, 
           setUserInput,
-          listCertificates, 
-          setListCertificates,
+          certificatesArray, 
+          setCertificatesArray,
           certify, 
           checkDocHash,
           checkIssuer,

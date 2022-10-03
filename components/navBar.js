@@ -70,9 +70,9 @@ export function NavBar() {
                 position = 'right'
                 name='Certify Document'
                 active={tab === 'Certify Document'}
-                onClick={() => setTab('Certify')}
-            />
-            <Menu.Item position = 'right'>
+                onClick={() => setTab('Certify')} >
+            </Menu.Item> 
+            <Menu.Item >
                 { renderButton() }
             </Menu.Item>
         </Menu>
