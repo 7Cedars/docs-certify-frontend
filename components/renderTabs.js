@@ -3,82 +3,67 @@ import { UserContext, Web3ModalContext } from "./userContext";
 import { Container, Header, Button, Icon, Segment, Form, Input, Grid, StepTitle, Card } from "semantic-ui-react"; 
 import 'semantic-ui-css/semantic.min.css';
 import { callCertificate, checkRecipient } from "../pages/index"
+import { datetime } from 'timeago-react';
 
 /* 
 Part 1: Create dynamic components for tabs. 
 */
 
-const renderListCertificates  = () => { // listCertificates
+const renderListCertificates  = (certificatesArray) => { 
 
-  // const item = [ 
-  //         {
-  //           header: 'None', 
-  //           meta: 'None', 
-  //           style: { overflowWrap: 'break-word' }
-  //         } ]
+  const { setCertificatesArray } = useContext(Web3ModalContext);
 
-  //   if (listCertificates) 
-  //   {
-  //     const item = [ 
-  //       {
-  //         header: 'Some', 
-  //         meta: 'Some', 
-  //         style: { overflowWrap: 'break-word' }
-  //         // header: listCertificates[0].issuer, 
-  //         // meta: listCertificates[0].receiver, 
-  //         // style: { overflowWrap: 'break-word' }
-  //       }   
-  //     ] 
+  const item = []
+  const button = ( 
+    <div className='ui two buttons'>
+        <Button basic color='red'>
+          Revoke
+        </Button>
+      </div>
+      ) 
 
-  //     }
-  
-  //   return <Card.Group items={item} /> 
-return (
-    <Container text textAlign = 'center'>
-    <Header
-      as='h1'
-      content='Rendered List' 
-      style={{
-        fontSize: '4em',
-        fontWeight: 'normal',
-        marginBottom: 0,
-        marginTop: '3em',
-      }}
-    />
-  </Container>
-)
+    
 
+  if (!certificatesArray) {
+    item = [] 
   }
-      
-  // }, [listCertificates]);
 
+  if (certificatesArray) {
+    if (certificatesArray.length == 0) {
+      item = [ 
+        {
+          header: 'No certificates found.', 
+          meta: 'This can be because....etc', 
+          style: { overflowWrap: 'break-word' },
+          fluid: true,
+          color: 'red'
+        } 
+      ]
+    }
 
-    // <Segment placeholder style={{
-    //   marginBottom: '2.5em',
-    //   marginTop: '2.5em',
-    //   }}>
-    // <Card.Group>
-    //    <Card fluid>
-    //       <Card.Content>
-    //         <Card.Header>Date: 12 October 2022 </Card.Header>
-    //         <Card.Header>Issuer: ENS Name</Card.Header>
-    //         <Card.Meta>Eth Address: 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</Card.Meta>
-    //         <Card.Header>Recipient: ENS Name</Card.Header>
-    //         <Card.Meta>Eth Address: 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</Card.Meta>
-    //         <Card.Header>Description</Card.Header>
-    //         <Card.Description>
-    //           Here a very succint description. 
-    //         </Card.Description>
-    //       </Card.Content>
-    //       <Card.Content extra>
-    //           <Button basic color='red'>
-    //           Revoke
-    //           </Button>
-    //       </Card.Content>
-    //    </Card>
-    // </Card.Group>
-    // </Segment>
+    if (certificatesArray.length > 0) {
 
+      item = certificatesArray.map((certificate, id) => ({
+        header: `Certicate issued on: ${certificate.dateTime}`,
+        meta: [`Issuer: ${certificate.issuer}`, <br/>,  
+                `Recipient: ${certificate.recipient}`],
+        description: `Description: ${certificate.description}`, 
+        fluid: true, 
+        style: { overflowWrap: 'break-word' },
+        extra: button
+      })
+      )
+    }
+  }
+
+  return <Card.Group 
+    style={{
+      marginTop: '5em',
+    }}
+    items = {item} /> ;
+
+}
+    
 /* 
 Part 2: Create dynamic tabs.
 */
@@ -91,7 +76,7 @@ export const RenderFullPage = () => {
   if (tab == 'Home') { 
 
     return (     
-      <Container text textAlign = 'center'>
+      <Container text textAlign = 'center' >
       <Header
         as='h1'
         content='Certify.xyz' 
@@ -141,122 +126,6 @@ export const RenderFullPage = () => {
     </Container>
     )
   }
-}
-
-export const RenderLeftTab = () => {
-
-  const { tab } = useContext(UserContext);
-
-  const { 
-    userInput, 
-    setListCertificates, 
-    listCertificates, 
-    callCertificate,
-    checkRecipient,  
-    setUserInput } = useContext(Web3ModalContext);
-
-  if (tab == 'DocHash_Certs') { 
-    return (    
-      <Container text textAlign = 'center'>
-      <Header
-        as='h1'
-        content='DocHash_Certs' 
-        style={{
-          fontSize: '4em',
-          fontWeight: 'normal',
-          marginBottom: 0,
-          marginTop: '3em',
-        }}
-      />
-    </Container>
-  
-    ) 
-  }
-
-  if (tab == 'Issued_Certs') { 
-    return (    
-      <Container text textAlign = 'center'>
-      <Header
-        as='h1'
-        content='Issued_Certs' 
-        style={{
-          fontSize: '4em',
-          fontWeight: 'normal',
-          marginBottom: 0,
-          marginTop: '3em',
-        }}
-      />
-    </Container>
-  
-    ) 
-  }
-
-  if (tab == 'Received_Certs') { 
-
-    const handleSubmit = async (e) => {
-      e.preventDefault(); 
-  
-      try {
-  
-      const data = await (checkRecipient(userInput))
-      const certificates = [];
-    
-      // I think I can do this with a mapping... anyway. // this await is tricky with a mapping. 
-      for (let i = 0; i < data.length; i++) {
-        certificates.push(
-          await callCertificate( parseInt(data[i]) - 1)
-          );
-        }
-        
-        setListCertificates(certificates)
-    
-        console.log ( listCertificates )
-    
-      } catch (err) {
-          console.error(err);
-        }
-      }
-
-    return (    
-      <Container >
-          <Segment placeholder textAlign = 'center' style={{
-              marginBottom: '2.5em',
-              marginTop: '2.5em',
-           
-              // fontSize: 'large',
-              }}>
-                <Container textAlign="center">
-                  <Icon name='file outline' size = 'huge' style={{
-                    marginTop: '.5em',
-                    }}>
-                  </Icon>
-                  <form onSubmit = {handleSubmit}>                
-                  <label>Check received certificates by address</label>
-                    <input 
-                      type ='text'
-                      placeholder='Ethereum adress: 0x00...' 
-                      value={userInput}
-                      onChange ={(e) => setUserInput(e.target.value)} 
-                      /> 
-                  <Button primary  style={{
-                      marginBottom: '2em',
-                      marginTop: '1em',
-                      textAlign: 'center',
-                      fontSize: 'large',
-                      }}>
-                      Submit Address
-                  </Button>  
-                  </form>
-                                 
-              </Container>
-              {/* The document will not leave your computer. 
-              It is uploaded to your browser that will create a unique document identifier. 
-              This unique identifier is uploaded to the Ethereum blockchain and used to 
-              certify the document's authenticity. */}
-          </Segment>
-        </Container>       
-    ) 
-  }
 
   if (tab == 'Certify') { 
     return (    
@@ -277,30 +146,25 @@ export const RenderLeftTab = () => {
   }
 }
 
-export const RenderRigthTab = () => {
+export const RenderLeftTab = () => {
 
   const { tab } = useContext(UserContext);
 
   const { 
     userInput, 
-    listCertificates,   
+    setCertificatesArray, 
+    certificatesArray, 
+    callCertificate,
+    checkIssuer,
+    checkRecipient,
     setUserInput } = useContext(Web3ModalContext);
 
-  if (tab == 'DocHash_Certs'||
-      tab == 'Issued_Certs'||
-      tab == 'Received_Certs' ) { 
-
-      return (
-        renderListCertificates() 
-        )
-  }
-
-  if (tab == 'Certify') { 
+  if (tab == 'DocHash_Certs') { 
     return (    
       <Container text textAlign = 'center'>
       <Header
         as='h1'
-        content='Certify User input here.' 
+        content='DocHash_Certs' 
         style={{
           fontSize: '4em',
           fontWeight: 'normal',
@@ -312,6 +176,98 @@ export const RenderRigthTab = () => {
   
     ) 
   }
+
+  if (tab == 'Issued_Certs' || 
+      tab == 'Received_Certs') {
+
+    const certificates = [];
+    const data = []
+
+    const handleSubmit = async (e) => {
+      e.preventDefault(); 
+  
+    try {
+      if (tab == 'Issued_Certs') {
+        data = await (checkIssuer(userInput))
+      } else {
+        data = await (checkRecipient(userInput))
+        }
+    
+      // I think I can do this with a mapping... anyway. // this await is tricky with a mapping. 
+      for (let i = 0; i < data.length; i++) {
+        certificates.push(
+          await callCertificate( parseInt(data[i]) - 1)
+          );
+        }
+
+        console.log(certificates)
+        
+        setCertificatesArray(certificates)
+    
+      } catch (err) {
+          console.error(err);
+        }
+      }
+
+    return (
+      <Container fluid className="userInputBox">
+          <Segment placeholder fluid textAlign = 'center' style={{
+              marginBottom: '5em',
+              marginTop: '10em',
+              fontSize: 'large'
+              }}>
+                <Container fluid>
+                  <Icon name='file outline' size = 'huge' style={{
+                    marginTop: '.5em', marginBottom: '.5em' 
+                    }}>
+                  </Icon>
+                  <Form onSubmit = {handleSubmit} fluid  >
+                    <Form.Input fluid 
+                      label=
+                        {tab == 'Issued_Certs' ? 
+                          'Check issued certificates by address' : 
+                          'Check received certificates by address'                    
+                        }
+                      control={ Input }
+                      placeholder='Ethereum adress: 0x00...' 
+                      value={userInput}
+                      onChange = {(e) => setUserInput(e.target.value)} 
+                      >
+                      </Form.Input>
+                  <Button primary style={{
+                      marginBottom: '2em',
+                      marginTop: '1em',
+                      textAlign: 'center',
+                      fontSize: 'large',
+                      }}>
+                      Submit Address
+                  </Button>  
+                  </Form>
+                                 
+              </Container>
+              {/* The document will not leave your computer. 
+              It is uploaded to your browser that will create a unique document identifier. 
+              This unique identifier is uploaded to the Ethereum blockchain and used to 
+              certify the document's authenticity. */}
+          </Segment>
+        </Container>       
+    ) 
+  }
 }
+
+export const RenderRigthTab = () => {
+
+  const { tab } = useContext(UserContext);
+  const { certificatesArray } = useContext(Web3ModalContext);
+
+  if (tab == 'DocHash_Certs'||
+      tab == 'Issued_Certs'||
+      tab == 'Received_Certs' ) { 
+
+      return (
+        renderListCertificates(certificatesArray) 
+        )
+    }
+  }
 
   // https://blog.logrocket.com/using-filereader-api-preview-images-react/
