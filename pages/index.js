@@ -6,7 +6,7 @@ import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
 import { Contract, providers, utils } from "ethers";
 import { Container, Grid } from "semantic-ui-react"; 
-import { backgroundImage } from "../public/vercel.svg"
+// import  background2 from "../src/assets/images/background2.jpg"
 
 export default function Home() {
 
@@ -15,23 +15,21 @@ export default function Home() {
   const [requestConnect, setRequestConnect] = useState(false);
   const [certificatesArray, setCertificatesArray] = useState();
   const [userInput, setUserInput] = useState('');
+  const [userFile, setUserFile] = useState('');
+  const [fileDataURL, setFileDataURL] = useState(null);
   const web3ModalRef = useRef();
-  // const imageType = /image\/(png|jpg|jpeg|pdf)/i;
-  // const [file, setFile] = useState(null);
-  // const [fileDataURL, setFileDataURL] = useState(null);
+  
   
   // NB: SETTING BACKGROUND IMAGE SOMEHOW DOES NOT WORK YET... 
-  const style = {
-    backgroundImage: `url('${backgroundImage}')`,
-    height:'100vh',
-    marginTop:'-70px',
-    fontSize:'50px',
-    backgroundSize: 'cover',
-    backgroundRepeat: 'no-repeat',
-  }
+  // const myStyle = {
+  //   backgroundImage: `url('${background2}')`,
+  //   backgroundPosition: 'center',
+  //   backgroundSize: 'cover',
+  //   backgroundRepeat: 'no-repeat'
+  // }
 
   // document.body.style.backgroundColor = "red"; // THIS WORKS... 
- //  document.body.style.backgroundImage = style; // BUT THIS DOES NOT?!... 
+  // document.body.style.backgroundImage = myStyle; // BUT THIS DOES NOT?!... 
   // NB: SETTING BACKGROUND IMAGE SOMEHOW DOES NOT WORK YET... 
 
   const getProviderOrSigner = async (needSigner = false) => {
@@ -73,7 +71,7 @@ export default function Home() {
       connectWallet();
     } catch (err) {
       setWalletConnected(false)
-    }
+       }
   }, [walletConnected]);
 
   useEffect(() => {
@@ -115,7 +113,7 @@ export default function Home() {
       // call function in contract. 
       const certificateIndex = await dcContract.checkDocHash(userInput);
 
-      return certificateIndex
+      return certificateIndex[0]
 
     } catch (err) {
       console.error(err.message);
@@ -202,15 +200,46 @@ export default function Home() {
   // All functions above are made available to all nested components below.
   // Second user context communicates what tab is selected.
   
+  // useEffect(() => {
+  //   // document.body.style.backgroundImage = myStyle;
+  //   document.body.style.backgroundImage = myStyle; // `url(${background2})`;
+  //   // document.body.style.backgroundColor = "red";
+  // }, []);
+
   useEffect(() => {
     setCertificatesArray(null)
+    setFileDataURL(null)
+    setUserFile(null)
   }, [tab]); 
 
   useEffect(() => {
     RenderRigthTab  
   }, [certificatesArray]); 
   
+  useEffect(() => {
+    let fileReader, isCancel = false;
+    if (userFile) {
+      fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const { result } = e.target;
+        if (result && !isCancel) {
+          setFileDataURL(result)
+        }
+      }
+      fileReader.readAsDataURL(userFile);
+    }
+
+    return () => {
+      isCancel = true;
+      if (fileReader && fileReader.readyState === 1) {
+        fileReader.abort();
+      }
+    }
+
+  }, [userFile]);
+
   return (
+    
       <div > 
         <UserContext.Provider value={{ tab, setTab }}>
         <Web3ModalContext.Provider value={{ 
@@ -218,6 +247,10 @@ export default function Home() {
           setRequestConnect, 
           userInput, 
           setUserInput,
+          userFile, 
+          setUserFile,
+          fileDataURL, 
+          setFileDataURL,
           certificatesArray, 
           setCertificatesArray,
           certify, 

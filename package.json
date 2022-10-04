@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "crypto-js": "^4.1.1",
     "ethers": "^5.7.1",
     "file-upload-with-preview": "^5.0.7",
     "next": "12.3.1",
