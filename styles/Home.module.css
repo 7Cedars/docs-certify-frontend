@@ -135,3 +135,12 @@
     filter: invert(1);
   }
 }
+
+@media (max-width: 1000px) {
+  .main {
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}

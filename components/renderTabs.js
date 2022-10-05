@@ -108,7 +108,8 @@ export const RenderFullPage = () => {
           fontSize: '4em',
           fontWeight: 'normal',
           marginBottom: 0,
-          marginTop: '3em',
+          marginTop: '5em',
+          color: "white"
         }}
       />
       <Header
@@ -120,6 +121,7 @@ export const RenderFullPage = () => {
           fontSize: '1.7em',
           fontWeight: 'normal',
           marginTop: '1.5em',
+          color: "white"
         }}
       />
         <Button primary size='huge' 
@@ -206,7 +208,7 @@ export const RenderFullPage = () => {
               marginTop: '5em',
               fontSize: 'large'
               }}>
-              <Header as='h3' > Unique Document Hash </Header>
+              <Header as='h3' style = {{ color: "white" }}> Unique Document Hash </Header>
             
               { userInput ? 
                 <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
@@ -219,7 +221,7 @@ export const RenderFullPage = () => {
               }   
             
               <Form.Field  style={{ marginTop: '1.5em' }}>
-                <label>Recipient Address </label>
+                <label style={{ color: "white" }} >Recipient Address </label>
                 <input 
                   type='text'
                   placeholder='0x00... (optional) ' 
@@ -227,8 +229,8 @@ export const RenderFullPage = () => {
                   />
               </Form.Field>
 
-              <Form.Field>
-                <label>Description</label>
+              <Form.Field >
+                <label style={{ color: "white" }}>Description</label>
                 <input 
                   type='text'
                   placeholder='Brief description of document. (optional)' 
@@ -259,28 +261,21 @@ export const RenderFullPage = () => {
 
           </Grid.Column> 
       </Grid>
+
       : 
 
-      <Segment color='red'
+      <Segment placeholder color='red'
       style={{ 
-        marginBottom: '5em',
-        marginTop: '6em',
-        fontSize: 'large'
+        marginBottom: '3em',
+        marginTop: '5.7em',
+        fontSize: 'large', 
+        textAlign: "center"
         }}>
       <Header>
-        <Icon name='connectdevelop' size = 'huge' style={{
-          marginTop: '.5em', marginBottom: '1em' 
-          }}>
-        </Icon>
           Please connect with your Ethereum wallet. 
-       
       </Header>
-      
+      <br/>
         Documents can only be certified while being logged in with an Ethereum wallet. 
-        <br/>
-        <br/>
-        Please connect to this dapp your Ethereum wallet. 
-        
       </Segment>
     }
     </Container>

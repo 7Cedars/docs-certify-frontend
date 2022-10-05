@@ -7,7 +7,8 @@ import Web3Modal, { PROVIDER_ICON_CLASSNAME } from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
 import { Contract, providers, utils } from "ethers";
 import { Container, Grid } from "semantic-ui-react"; 
-// import  background2 from "../src/assets/images/background2.jpg"
+import styles from "../styles/Home.module.css";
+import  bg from "../assets/images/background3.jpg"
 
 export default function Home() {
 
@@ -22,18 +23,6 @@ export default function Home() {
   const [userInput, setUserInput] = useState('');
   const [userFile, setUserFile] = useState('');
   const [fileDataURL, setFileDataURL] = useState(null);
-    
-  // NB: SETTING BACKGROUND IMAGE SOMEHOW DOES NOT WORK YET... 
-  // const myStyle = {
-  //   backgroundImage: `url('${background2}')`,
-  //   backgroundPosition: 'center',
-  //   backgroundSize: 'cover',
-  //   backgroundRepeat: 'no-repeat'
-  // }
-
-  // document.body.style.backgroundColor = "red"; // THIS WORKS... 
-  // document.body.style.backgroundImage = myStyle; // BUT THIS DOES NOT?!... 
-  // NB: SETTING BACKGROUND IMAGE SOMEHOW DOES NOT WORK YET... 
 
   const getProviderOrSigner = async (needSigner = false) => {
 
@@ -88,12 +77,6 @@ export default function Home() {
   useEffect(() => {
     getProviderOrSigner(false)
   }, []);
-
-  // useEffect(() => {
-  //   if (requestConnect) {
-  //     connectWallet();
-  //   }
-  // }, [requestConnect]);
 
  const certify = async (userInput) => {
 
@@ -213,11 +196,9 @@ export default function Home() {
   // All functions above are made available to all nested components below.
   // Second user context communicates what tab is selected.
   
-  // useEffect(() => {
-  //   // document.body.style.backgroundImage = myStyle;
-  //   document.body.style.backgroundImage = myStyle; // `url(${background2})`;
-  //   // document.body.style.backgroundColor = "red";
-  // }, []);
+  useEffect(() => {
+     document.body.style.backgroundImage = `url(${bg.src})`; // `url(${background2})`;
+  }, []);
 
   useEffect(() => {
     setCertificatesArray(null)
