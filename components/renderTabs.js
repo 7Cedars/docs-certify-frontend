@@ -22,20 +22,13 @@ const renderListCertificates  = (certificatesArray) => {
   // NB! To make this work properly, I first have to implement loading default wallet, 
   // and implement logging in as a designated signer... see ethers docs: https://docs.ethers.io/v5/getting-started/
   const button = (issuer, recipient) => {
-    if ( issuer == account
+    if ( issuer == account ||
+         recipient == account
       ) {
       return (
         <div className='ui two buttons'>
             <Button basic color='red'>
               Revoke
-            </Button>
-        </div>
-      )
-    } else {
-      return (
-        <div className='ui two buttons'>
-            <Button basic color='red'>
-              Not revoke 
             </Button>
         </div>
       )
@@ -97,7 +90,8 @@ export const RenderFullPage = () => {
     setUserFile, 
     fileDataURL, 
     certify,
-    loading
+    loading, 
+    walletConnected
     } = useContext(Web3ModalContext);
 
   let recipientInput; 
@@ -167,105 +161,130 @@ export const RenderFullPage = () => {
 
     return ( 
       <Container>
-      <Grid padded>
-        <Grid.Column width = '8' > 
-        <Container className="userInputBox">
-        <Segment placeholder textAlign = 'center' style={{
-          marginBottom: '5em',
-          marginTop: '5em',
-          fontSize: 'large'
-          }}>
-            { fileDataURL ? 
-              <Image src={ fileDataURL } alt="preview" />
-              : 
-              <Container >
-                <Icon name='file image outline' size = 'huge' style={{
-                  marginTop: '.5em', marginBottom: '0em' 
-                  }}>
-                </Icon>
-                <Form >                
-                    <input
-                      type="file"                 
-                      single="true"
-                      onChange={ changeHandler }
-                    />
-                  </Form>
-                  </Container>
-                }
-                <Container style={{
-                  marginTop: '1.5em', marginBottom: '0em' 
-                  }}>
-                The document will not leave your computer. 
-                You browser will create a unique document identifier that is uploaded to the Ethereum blockchain.
-            </Container>
-            
-           </Segment>
-          </Container>
+        { walletConnected ? 
 
-        </Grid.Column> 
-        <Grid.Column width = '8'> 
-          <Form onSubmit = { onSubmit } 
-            style={{
+        <Grid padded>
+          <Grid.Column width = '8' > 
+          <Container className="userInputBox">
+          <Segment placeholder textAlign = 'center' style={{
             marginBottom: '5em',
             marginTop: '5em',
             fontSize: 'large'
             }}>
-            <Header as='h3' > Unique Document Hash </Header>
-          
-            { userInput ? 
-              <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
-               { userInput } 
-              </Segment>
-              :
-              <Segment color='red' style={{fontSize: 'large'}} > 
-               Please choose a document to certify. 
-              </Segment>
-            }   
-           
-            <Form.Field  style={{ marginTop: '1.5em' }}>
-              <label>Recipient Address </label>
-              <input 
-                type='text'
-                placeholder='0x00... (optional) ' 
-                onChange= { (e) => recipientInput = e.target.value }
-                />
-            </Form.Field>
+              { fileDataURL ? 
+                <Image src={ fileDataURL } alt="preview" />
+                : 
+                <Container >
+                  <Icon name='file image outline' size = 'huge' style={{
+                    marginTop: '.5em', marginBottom: '0em' 
+                    }}>
+                  </Icon>
+                  <Form >                
+                      <input
+                        type="file"                 
+                        single="true"
+                        onChange={ changeHandler }
+                      />
+                    </Form>
+                    </Container>
+                  }
+                  <Container style={{
+                    marginTop: '1.5em', marginBottom: '0em' 
+                    }}>
+                  The document will not leave your computer. 
+                  You browser will create a unique document identifier that is uploaded to the Ethereum blockchain.
+              </Container>
+              
+            </Segment>
+            </Container>
 
-            <Form.Field>
-              <label>Description</label>
-              <input 
-                type='text'
-                placeholder='Brief description of document. (optional)' 
-                onChange= { (e) => descriptionInput = e.target.value }
-                />
-            </Form.Field>
+          </Grid.Column> 
+          <Grid.Column width = '8'> 
+            <Form onSubmit = { onSubmit } 
+              style={{
+              marginBottom: '5em',
+              marginTop: '5em',
+              fontSize: 'large'
+              }}>
+              <Header as='h3' > Unique Document Hash </Header>
+            
+              { userInput ? 
+                <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
+                { userInput } 
+                </Segment>
+                :
+                <Segment color='red' style={{fontSize: 'large'}} > 
+                Please choose a document to certify. 
+                </Segment>
+              }   
+            
+              <Form.Field  style={{ marginTop: '1.5em' }}>
+                <label>Recipient Address </label>
+                <input 
+                  type='text'
+                  placeholder='0x00... (optional) ' 
+                  onChange= { (e) => recipientInput = e.target.value }
+                  />
+              </Form.Field>
 
-            <Form.Field style={{textAlign: 'center'}}>
-            <Button primary type='submit'
-            disabled = { !userInput }       
-                  style={{ 
-                    marginBottom: '5em',
-                    marginTop: '1em',
-                    fontSize: 'large'
-                    }}> 
-                Upload certificate to the ethereum blockchain
-              </Button>
-            </Form.Field>
-          </Form>
+              <Form.Field>
+                <label>Description</label>
+                <input 
+                  type='text'
+                  placeholder='Brief description of document. (optional)' 
+                  onChange= { (e) => descriptionInput = e.target.value }
+                  />
+              </Form.Field>
 
-          { loading ? 
-              <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
-               LOADING....  
-              </Segment>
-              :
-              null
-            }   
+              <Form.Field style={{textAlign: 'center'}}>
+              <Button primary type='submit'
+              disabled = { !userInput }       
+                    style={{ 
+                      marginBottom: '5em',
+                      marginTop: '1em',
+                      fontSize: 'large'
+                      }}> 
+                  Upload certificate to the ethereum blockchain
+                </Button>
+              </Form.Field>
+            </Form>
 
-        </Grid.Column> 
-    </Grid>
+            { loading ? 
+                <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
+                LOADING....  
+                </Segment>
+                :
+                null
+              }   
+
+          </Grid.Column> 
+      </Grid>
+      : 
+
+      <Segment color='red'
+      style={{ 
+        marginBottom: '5em',
+        marginTop: '6em',
+        fontSize: 'large'
+        }}>
+      <Header>
+        <Icon name='connectdevelop' size = 'huge' style={{
+          marginTop: '.5em', marginBottom: '1em' 
+          }}>
+        </Icon>
+          Please connect with your Ethereum wallet. 
+       
+      </Header>
+      
+        Documents can only be certified while being logged in with an Ethereum wallet. 
+        <br/>
+        <br/>
+        Please connect to this dapp your Ethereum wallet. 
+        
+      </Segment>
+    }
     </Container>
-
-      ) 
+    )
     }
   }
 

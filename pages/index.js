@@ -12,16 +12,17 @@ import { Container, Grid } from "semantic-ui-react";
 export default function Home() {
 
   const [tab, setTab] = useState('Home');
+  const [loading, setLoading] = useState(false);
+
   const [walletConnected, setWalletConnected] = useState(false);
-  const [requestConnect, setRequestConnect] = useState(false);
+  const [address, setAddress] = useState();
+  const web3ModalRef = useRef();
+
   const [certificatesArray, setCertificatesArray] = useState();
   const [userInput, setUserInput] = useState('');
   const [userFile, setUserFile] = useState('');
-  const [loading, setLoading] = useState(false);
   const [fileDataURL, setFileDataURL] = useState(null);
-  const [account, setAccount] = useState();
-  const web3ModalRef = useRef();
-  
+    
   // NB: SETTING BACKGROUND IMAGE SOMEHOW DOES NOT WORK YET... 
   // const myStyle = {
   //   backgroundImage: `url('${background2}')`,
@@ -36,18 +37,19 @@ export default function Home() {
 
   const getProviderOrSigner = async (needSigner = false) => {
 
-    web3ModalRef.current = new ethers.getDefaultProvider("goerli")
-    const web3Provider = web3ModalRef.current
-
-    if (needSigner) {
-
-      web3ModalRef.current = new Web3Modal({
-        providerOptions: {},
-        disableInjectedProvider: false,
-      });
+    if (needSigner == false) {
+      // create a default, read only, provider. This way dapp is usable without having a web3 wallet. 
+      web3ModalRef.current = new ethers.getDefaultProvider("goerli")
+      const web3Provider = web3ModalRef.current
+      
+      return web3Provider;
+    }
+    
+    if (needSigner == true) {
 
       const provider = await web3ModalRef.current.connect();
       const web3Provider = new providers.Web3Provider(provider);
+      
 
       const { chainId } = await web3Provider.getNetwork();
 
@@ -57,20 +59,27 @@ export default function Home() {
       }
 
       const signer = web3Provider.getSigner();
+      let walletAddress = await signer.getAddress();
+      setAddress(walletAddress)
+
       return signer;
+      return web3Provider;
     }
-
-    return web3Provider;
-
+    
   };
 
   const connectWallet = async () => {
+
+    // web3ModalRef.current = null; 
+
+    web3ModalRef.current = new Web3Modal({
+      providerOptions: {},
+      disableInjectedProvider: false,
+    });
+
     try {
-      // Get the provider from web3Modal, which in our case is MetaMask
-      // When used for the first time, it prompts the user to connect their wallet
       await getProviderOrSigner(true);
       setWalletConnected(true);
-      setRequestConnect(false);
     } catch (err) {
       console.error(err);
     }
@@ -80,22 +89,11 @@ export default function Home() {
     getProviderOrSigner(false)
   }, []);
 
-  useEffect(() => {
-    try {
-      getProviderOrSigner();
-    } catch (err) {
-      setWalletConnected(false)
-    }
-  }, [walletConnected]);
-
-  useEffect(() => {
-    if (requestConnect) {
-      // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
-      // Assign the Web3Modal class to the reference object by setting it's `current` value
-      // The `current` value is persisted throughout as long as this page is open
-      connectWallet();
-    }
-  }, [requestConnect]);
+  // useEffect(() => {
+  //   if (requestConnect) {
+  //     connectWallet();
+  //   }
+  // }, [requestConnect]);
 
  const certify = async (userInput) => {
 
@@ -259,13 +257,13 @@ export default function Home() {
         <UserContext.Provider value={{ tab, setTab }}>
         <Web3ModalContext.Provider value={{ 
           walletConnected, 
-          setRequestConnect, 
+          connectWallet, 
           userInput, setUserInput,
           userFile, setUserFile,
           fileDataURL, setFileDataURL,
           certificatesArray, setCertificatesArray,
           loading, setLoading,
-          account, setAccount,
+          account: address, setAccount: setAddress,
           certify, 
           checkDocHash,
           checkIssuer,
@@ -298,7 +296,4 @@ export default function Home() {
 // main part is from web3dao learning course. -- the useContext tick is from youtube: https://www.youtube.com/watch?v=vYWMyOyrbYU
 
 // NB check LEarnweb3.io class on ENS names to refactor this page. Insert ENS names
-// NB: but also get rid of REF to web3modal! 
-// This probably means I can just make a utils component with all wallet functions. 
-// I won't have to send them through with useContext! 
 // https://learnweb3.io/courses/6394ea7c-0ad6-4a4a-879f-7f9756bc5976/lessons/23bacf56-3ceb-457a-a97d-419fe3b333d9 
