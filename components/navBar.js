@@ -46,11 +46,6 @@ export function NavBar() {
                 onClick={() => setTab('Home')}
             />
             <Menu.Item 
-                name='About'
-                active={tab === 'About'}
-                onClick={() => setTab('About')}
-            />
-            <Menu.Item 
                 name='Check Document'
                 active={tab === 'Check Document'}
                 onClick={() => setTab('DocHash_Certs')}

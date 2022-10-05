@@ -14,14 +14,33 @@ Part 1: Create dynamic components for tabs.
 
 const renderListCertificates  = (certificatesArray) => { 
 
-  const item = []
-  const button = ( 
-    <div className='ui two buttons'>
-        <Button basic color='red'>
-          Revoke
-        </Button>
-      </div>
-      ) 
+  const { account } = useContext(Web3ModalContext);
+  console.log( account )
+
+  const item = []  
+
+  // NB! To make this work properly, I first have to implement loading default wallet, 
+  // and implement logging in as a designated signer... see ethers docs: https://docs.ethers.io/v5/getting-started/
+  const button = (issuer, recipient) => {
+    if ( issuer == account
+      ) {
+      return (
+        <div className='ui two buttons'>
+            <Button basic color='red'>
+              Revoke
+            </Button>
+        </div>
+      )
+    } else {
+      return (
+        <div className='ui two buttons'>
+            <Button basic color='red'>
+              Not revoke 
+            </Button>
+        </div>
+      )
+    }
+  }
 
   if (!certificatesArray) {
     item = [] 
@@ -43,13 +62,14 @@ const renderListCertificates  = (certificatesArray) => {
     if (certificatesArray.length > 0) {
 
       item = certificatesArray.map((certificate, id) => ({
+        // key: id, -- does not seem to work. 
         fluid: true,
         header: `Certicate issued on: ${certificate.dateTime}`,
         meta: [`Issuer: ${certificate.issuer}`, <br/>,  
                 `Recipient: ${certificate.recipient}`],
         description: `Description: ${certificate.description}`, 
         style: { overflowWrap: 'break-word' },
-        extra: button
+        extra: button(certificate.issuer)
       })
       )
     }
@@ -70,6 +90,18 @@ Part 2: Create dynamic tabs.
 export const RenderFullPage = () => {
 
   const { tab } = useContext(UserContext);
+  const { 
+    userInput,
+    userFile,  
+    setUserInput, 
+    setUserFile, 
+    fileDataURL, 
+    certify,
+    loading
+    } = useContext(Web3ModalContext);
+
+  let recipientInput; 
+  let descriptionInput; 
   
   if (tab == 'Home') { 
 
@@ -107,53 +139,135 @@ export const RenderFullPage = () => {
     ) 
   }
 
-  if (tab == 'About') { 
-
-    return (
-      <Container text textAlign = 'center'>
-      <Header
-        as='h1'
-        content='About section' 
-        style={{
-          fontSize: '4em',
-          fontWeight: 'normal',
-          marginBottom: 0,
-          marginTop: '5em',
-        }}
-      />
-    </Container>
-    )
-  }
-
   if (tab == 'Certify') { 
+
+    const onSubmit = async (e) => {
+      setUserInput([userInput, recipientInput, descriptionInput])
+      
+      certify(userInput)
+
+      console.log(userInput)
+    };
+
+    const changeHandler = async (e) => {      
+      
+      const input = e.target.files[0]; 
+      setUserFile(input);
+  
+      let fileReader = false;
+      let result; 
+
+      fileReader = new FileReader();
+        fileReader.readAsDataURL(input);
+        fileReader.onload = function () {
+          result = fileReader.result; 
+          setUserInput(sha256(result).toString());
+        };  
+    };
+
     return ( 
       <Container>
       <Grid padded>
         <Grid.Column width = '8' > 
-          <RenderLeftTab />
+        <Container className="userInputBox">
+        <Segment placeholder textAlign = 'center' style={{
+          marginBottom: '5em',
+          marginTop: '5em',
+          fontSize: 'large'
+          }}>
+            { fileDataURL ? 
+              <Image src={ fileDataURL } alt="preview" />
+              : 
+              <Container >
+                <Icon name='file image outline' size = 'huge' style={{
+                  marginTop: '.5em', marginBottom: '0em' 
+                  }}>
+                </Icon>
+                <Form >                
+                    <input
+                      type="file"                 
+                      single="true"
+                      onChange={ changeHandler }
+                    />
+                  </Form>
+                  </Container>
+                }
+                <Container style={{
+                  marginTop: '1.5em', marginBottom: '0em' 
+                  }}>
+                The document will not leave your computer. 
+                You browser will create a unique document identifier that is uploaded to the Ethereum blockchain.
+            </Container>
+            
+           </Segment>
+          </Container>
+
         </Grid.Column> 
         <Grid.Column width = '8'> 
-          <RenderRigthTab />
+          <Form onSubmit = { onSubmit } 
+            style={{
+            marginBottom: '5em',
+            marginTop: '5em',
+            fontSize: 'large'
+            }}>
+            <Header as='h3' > Unique Document Hash </Header>
+          
+            { userInput ? 
+              <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
+               { userInput } 
+              </Segment>
+              :
+              <Segment color='red' style={{fontSize: 'large'}} > 
+               Please choose a document to certify. 
+              </Segment>
+            }   
+           
+            <Form.Field  style={{ marginTop: '1.5em' }}>
+              <label>Recipient Address </label>
+              <input 
+                type='text'
+                placeholder='0x00... (optional) ' 
+                onChange= { (e) => recipientInput = e.target.value }
+                />
+            </Form.Field>
+
+            <Form.Field>
+              <label>Description</label>
+              <input 
+                type='text'
+                placeholder='Brief description of document. (optional)' 
+                onChange= { (e) => descriptionInput = e.target.value }
+                />
+            </Form.Field>
+
+            <Form.Field style={{textAlign: 'center'}}>
+            <Button primary type='submit'
+            disabled = { !userInput }       
+                  style={{ 
+                    marginBottom: '5em',
+                    marginTop: '1em',
+                    fontSize: 'large'
+                    }}> 
+                Upload certificate to the ethereum blockchain
+              </Button>
+            </Form.Field>
+          </Form>
+
+          { loading ? 
+              <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
+               LOADING....  
+              </Segment>
+              :
+              null
+            }   
+
         </Grid.Column> 
     </Grid>
     </Container>
-      
-    //   <Container text textAlign = 'center'>
-    //   <Header
-    //     as='h1'
-    //     content='Certify' 
-    //     style={{
-    //       fontSize: '4em',
-    //       fontWeight: 'normal',
-    //       marginBottom: 0,
-    //       marginTop: '5em',
-    //     }}
-    //   />
-    // </Container>
-  
-    ) 
+
+      ) 
+    }
   }
-}
 
 export const RenderLeftTab = () => {
 
@@ -186,12 +300,9 @@ export const RenderLeftTab = () => {
 
     const changeHandler = async (e) => {
       
-      const input = e.target.files[0];
-      // if (!input.type.match(imageMimeType)) {
-      //   alert("Image mime type is not valid");
-      //   return;
-      // }      
+      const input = e.target.files[0]; 
       setUserFile(input);
+
     }
 
     const handleSubmit = async () => {
@@ -272,7 +383,7 @@ export const RenderLeftTab = () => {
                       fontSize: 'large',
                       marginTop: '2em',
                       }}>
-                      Submit File
+                      Check Document
                      
                   </Button>  
                 </Form>
@@ -350,7 +461,7 @@ export const RenderLeftTab = () => {
                       textAlign: 'center',
                       fontSize: 'large',
                       }}>
-                      Submit Address
+                      Check Address
                   </Button>  
                   </Form>
                                  
