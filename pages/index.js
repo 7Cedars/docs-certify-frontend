@@ -7,14 +7,16 @@ import Web3Modal, { PROVIDER_ICON_CLASSNAME } from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
 import { Contract, providers, utils } from "ethers";
 import { Container, Grid } from "semantic-ui-react"; 
-import styles from "../styles/Home.module.css";
+// import styles from "../styles/Home.module.css";
 import  bg from "../assets/images/background3.jpg"
 
 export default function Home() {
 
   const [tab, setTab] = useState('Home');
   const [loading, setLoading] = useState(false);
+  const [complete, setComplete] = useState(false);
 
+  const [requestConnect, setRequestConnect] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
   const [address, setAddress] = useState();
   const web3ModalRef = useRef();
@@ -24,9 +26,9 @@ export default function Home() {
   const [userFile, setUserFile] = useState('');
   const [fileDataURL, setFileDataURL] = useState(null);
 
-  const getProviderOrSigner = async (needSigner = false) => {
+  const getProviderOrSigner = async () => {
 
-    if (needSigner == false) {
+    if (!walletConnected) {
       // create a default, read only, provider. This way dapp is usable without having a web3 wallet. 
       web3ModalRef.current = new ethers.getDefaultProvider("goerli")
       const web3Provider = web3ModalRef.current
@@ -34,40 +36,36 @@ export default function Home() {
       return web3Provider;
     }
     
-    if (needSigner == true) {
+    if (walletConnected) {
+
+      web3ModalRef.current = new Web3Modal({
+        network: "goerli",
+        providerOptions: {},
+        disableInjectedProvider: false,
+      });
 
       const provider = await web3ModalRef.current.connect();
       const web3Provider = new providers.Web3Provider(provider);
-      
 
       const { chainId } = await web3Provider.getNetwork();
 
       if (chainId !== 5) {
         window.alert("Change the network to Goerli");
         throw new Error("Change network to Goerli");
-      }
+      }      
 
       const signer = web3Provider.getSigner();
       let walletAddress = await signer.getAddress();
       setAddress(walletAddress)
-
+      
       return signer;
-      return web3Provider;
     }
-    
   };
 
   const connectWallet = async () => {
 
-    // web3ModalRef.current = null; 
-
-    web3ModalRef.current = new Web3Modal({
-      providerOptions: {},
-      disableInjectedProvider: false,
-    });
-
     try {
-      await getProviderOrSigner(true);
+      await getProviderOrSigner();
       setWalletConnected(true);
     } catch (err) {
       console.error(err);
@@ -75,7 +73,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getProviderOrSigner(false)
+    if (requestConnect) {     
+      connectWallet();
+      setRequestConnect(false)
+    }
+  }, [requestConnect]);
+
+  useEffect(() => {
+    getProviderOrSigner()
   }, []);
 
  const certify = async (userInput) => {
@@ -84,7 +89,7 @@ export default function Home() {
 
     try {
       // get provider or signer.
-      const provider = await getProviderOrSigner(true);
+      const provider = await getProviderOrSigner();
      
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
@@ -140,9 +145,7 @@ export default function Home() {
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
       const certificateIndex = await dcContract.checkRecipient(userInput);
-
       // certificateIndex.keys
-
       return certificateIndex
 
     } catch (err) {
@@ -179,18 +182,21 @@ export default function Home() {
   }
 
   const revokeCertificate = async (index) => {
+    setLoading(true)
     try {
       // get provider or signer.
       const provider = await getProviderOrSigner();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
-      const certificate = await dcContract.revokeCertificate(index);
+      await dcContract.revokeCertificate(index);
 
-      console.log(certificate)
     } catch (err) {
       console.error(err.message);
     }
+
+    setLoading(true)
+    setComplete(false)
   }
 
   // All functions above are made available to all nested components below.
@@ -205,11 +211,12 @@ export default function Home() {
     setFileDataURL(null)
     setUserFile(null)
     setUserInput(null)
+    RenderRigthTab
   }, [tab]); 
 
   useEffect(() => {
     RenderRigthTab  
-  }, [certificatesArray]); 
+  }, [certificatesArray, loading, complete]); 
   
   useEffect(() => {
     let fileReader, isCancel = false;
@@ -236,15 +243,16 @@ export default function Home() {
     
       <div > 
         <UserContext.Provider value={{ tab, setTab }}>
-        <Web3ModalContext.Provider value={{ 
-          walletConnected, 
-          connectWallet, 
+        <Web3ModalContext.Provider value={{  
+          setRequestConnect,
+          walletConnected,
+          loading, setLoading,
+          complete, setComplete,
           userInput, setUserInput,
           userFile, setUserFile,
           fileDataURL, setFileDataURL,
           certificatesArray, setCertificatesArray,
-          loading, setLoading,
-          account: address, setAccount: setAddress,
+          address, setAddress,
           certify, 
           checkDocHash,
           checkIssuer,
@@ -253,7 +261,7 @@ export default function Home() {
           revokeCertificate
           }}>
         <NavBar />
-        <RenderFullPage />
+        {/* <RenderFullPage /> */}
           <Container>
             <Grid padded>
               <Grid.Column width = '8' > 

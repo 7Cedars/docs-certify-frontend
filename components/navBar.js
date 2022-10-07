@@ -7,18 +7,16 @@ import 'semantic-ui-css/semantic.min.css';
 export function NavBar() {
 
     const { tab, setTab } = useContext(UserContext);
-    const { walletConnected, connectWallet } = useContext(Web3ModalContext);
+    const { walletConnected, setRequestConnect } = useContext(Web3ModalContext);
 
     const renderButton = () => {
-
-        let click = false 
 
         // If wallet is not connected, return a button which allows them to connect their wllet
         if (!walletConnected) {
 
           return (
             <div> 
-            <Button  primary onClick={() => connectWallet() } > 
+            <Button  primary onClick={() => setRequestConnect(true) } > 
             Connect Wallet
             </Button>
             </div>
@@ -38,8 +36,7 @@ export function NavBar() {
           }
         }
 
-    return (
-        
+    return (        
             <Menu fixed='top'  >
                 <Menu.Item 
                     name='Home'
@@ -48,6 +45,11 @@ export function NavBar() {
                 >
                     <Icon name='checkmark' size = 'large'/>
                 </Menu.Item>  
+                <Menu.Item 
+                    name='About'
+                    active={tab === 'About'}
+                    onClick={() => setTab('About')}
+                />
                 <Grid container columns= {1} fluid >
                         <Grid.Row centered>
                         <Menu secondary>
@@ -58,12 +60,12 @@ export function NavBar() {
                             />
 
                             <Menu.Item 
-                                name='Issued Certificates'
+                                name='Check Certificates Issued'
                                 active={tab === 'Issued_Certs'}
                                 onClick={() => setTab('Issued_Certs')}
                             />
                             <Menu.Item 
-                                name='Received Certificates'
+                                name='Check Certificates Received'
                                 active={tab === 'Received_Certs'}
                                 onClick={() => setTab('Received_Certs')}
                             />
