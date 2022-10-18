@@ -4,10 +4,9 @@ import { Button, Grid, Container, Icon, Menu } from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
 
 
-export function NavBar() {
+export function NavBar( { walletConnected, setRequestConnect } ) {
 
     const { tab, setTab } = useContext(UserContext);
-    const { walletConnected, setRequestConnect } = useContext(Web3ModalContext);
 
     const renderButton = () => {
 
@@ -17,7 +16,7 @@ export function NavBar() {
           return (
             <div> 
             <Button  primary onClick={() => setRequestConnect(true) } > 
-            Connect Wallet
+                Connect Wallet
             </Button>
             </div>
           );
@@ -29,7 +28,7 @@ export function NavBar() {
             return (
             <div> 
               <Button  positive > 
-              Wallet Connected
+                Wallet Connected
               </Button>
               </div>
             );
@@ -50,7 +49,7 @@ export function NavBar() {
                     active={tab === 'About'}
                     onClick={() => setTab('About')}
                 />
-                <Grid container columns= {1} fluid >
+                <Grid container columns= {1} >
                         <Grid.Row centered>
                         <Menu secondary>
                             <Menu.Item 

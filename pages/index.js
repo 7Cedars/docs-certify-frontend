@@ -1,14 +1,16 @@
+// import styles from "../styles/Home.module.css";
 import React, { useState, useRef, useEffect } from "react";
 import { ethers } from "ethers"; 
 import { UserContext, Web3ModalContext } from "../components/userContext";
-import { RenderFullPage, RenderLeftTab, RenderRigthTab } from "../components/renderTabs";
+import { RenderRigthTab } from "../components/renderTabs";
 import { NavBar } from "../components/navBar";
 import Web3Modal, { PROVIDER_ICON_CLASSNAME } from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
 import { Contract, providers, utils } from "ethers";
 import { Container, Grid } from "semantic-ui-react"; 
-// import styles from "../styles/Home.module.css";
 import  bg from "../assets/images/background3.jpg"
+import FrontPage from "../components/FrontPage";
+import RenderCertificate from "../components/RenderCertificate"
 
 export default function Home() {
 
@@ -242,17 +244,16 @@ export default function Home() {
   return (
     
       <div > 
-        <UserContext.Provider value={{ tab, setTab }}>
+        <UserContext.Provider value={{ 
+          tab, setTab,
+          loading, setLoading, 
+          complete, setComplete }}> 
         <Web3ModalContext.Provider value={{  
           setRequestConnect,
           walletConnected,
-          loading, setLoading,
-          complete, setComplete,
           userInput, setUserInput,
           userFile, setUserFile,
           fileDataURL, setFileDataURL,
-          certificatesArray, setCertificatesArray,
-          address, setAddress,
           certify, 
           checkDocHash,
           checkIssuer,
@@ -260,18 +261,34 @@ export default function Home() {
           callCertificate,
           revokeCertificate
           }}>
-        <NavBar />
-        {/* <RenderFullPage /> */}
-          <Container>
-            <Grid padded>
-              <Grid.Column width = '8' > 
-                <RenderLeftTab />
-              </Grid.Column> 
-              <Grid.Column width = '8'> 
-                <RenderRigthTab />
-              </Grid.Column> 
-          </Grid>
-          </Container>
+        <NavBar walletConnected = {walletConnected} setRequestConnect = {setRequestConnect} />
+        <FrontPage />
+        { tab == 'DocHash_Certs'||
+          tab == 'Issued_Certs'||
+          tab == 'Received_Certs' ? 
+            <Container>
+              <Grid padded>
+                <Grid.Column width = '8' > 
+                  TEST TEST LEFT 
+                </Grid.Column> 
+                <Grid.Column width = '8'> {
+                  certificatesArray ? 
+                    certificatesArray.map(
+                      certificate => <RenderCertificate
+                        key = {certificate.id} 
+                        certificate = {certificate} 
+                        address = {address}
+                        revokeCertificate = {() => revokeCertificate(certificate.id) }/> 
+                      )
+                    :
+                      null
+                  }
+                </Grid.Column> 
+              </Grid>
+            </Container>             
+          :
+            <></>
+        }
         </Web3ModalContext.Provider>
         </UserContext.Provider>
         </div>

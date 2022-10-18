@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import ethers, { utils, base64 } from "ethers";
 // import {sha256} from 'crypto-hash';
 import * as sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
@@ -99,173 +100,7 @@ const renderListCertificates  = (certificatesArray) => {
     items = {item} /> ;
 
 }
-    
-/* 
-Part 2: Create dynamic tabs.
-*/
-
-// export const RenderFullPage = () => {
-
-//   const { tab, setTab } = useContext(UserContext);
-//   const { 
-//     userInput,  
-//     setUserInput, 
-//     setUserFile, 
-//     fileDataURL, 
-//     certify,
-//     loading, 
-//     walletConnected
-//     } = useContext(Web3ModalContext);
-
-//   let recipientInput; 
-//   let descriptionInput; 
-
-//   if (tab == 'Certify') { 
-
-    // const onSubmit = async (e) => {
-           
-    //   certify([userInput, recipientInput, descriptionInput])
-
-    //   console.log(userInput)
-    // };
-
-    // const changeHandler = async (e) => {      
-      
-    //   const input = e.target.files[0]; 
-    //   setUserFile(input);
   
-    //   let fileReader = false;
-    //   let result; 
-
-    //   fileReader = new FileReader();
-    //     fileReader.readAsDataURL(input);
-    //     fileReader.onload = function () {
-    //       result = fileReader.result; 
-    //       setUserInput(sha256(result).toString());
-    //     };  
-    // };
-
-    // return ( 
-    //   <Container>
-    //     { walletConnected ? 
-
-    //     <Grid padded>
-    //       <Grid.Column width = '8' > 
-    //       <Container className="userInputBox">
-    //       <Segment placeholder textAlign = 'center' style={{
-    //         marginBottom: '5em',
-    //         marginTop: '5em',
-    //         fontSize: 'large'
-    //         }}>
-    //           { fileDataURL ? 
-    //             <Image src={ fileDataURL } alt="preview" />
-    //             : 
-    //             <Container >
-    //               <Icon name='file image outline' size = 'huge' style={{
-    //                 marginTop: '.5em', marginBottom: '0em' 
-    //                 }}>
-    //               </Icon>
-    //               <Form >                
-    //                   <input
-    //                     type="file"                 
-    //                     single="true"
-    //                     onChange={ changeHandler }
-    //                   />
-    //                 </Form>
-    //                 </Container>
-    //               }
-    //               <Container style={{
-    //                 marginTop: '1.5em', marginBottom: '0em' 
-    //                 }}>
-    //               The document will not leave your computer. 
-    //               You browser will create a unique document identifier that is uploaded to the Ethereum blockchain.
-    //           </Container>
-              
-    //         </Segment>
-    //         </Container>
-
-
-            // <Form onSubmit = { onSubmit } 
-            //   style={{
-            //   marginBottom: '5em',
-            //   marginTop: '5em',
-            //   fontSize: 'large'
-            //   }}>
-            //   <Header as='h3' style = {{ color: "white" }}> Unique Document Hash </Header>
-            
-            //   { userInput ? 
-            //     <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
-            //     { userInput } 
-            //     </Segment>
-            //     :
-            //     <Segment color='red' style={{fontSize: 'large'}} > 
-            //     Please choose a document to certify. 
-            //     </Segment>
-            //   }   
-            
-            //   <Form.Field  style={{ marginTop: '1.5em' }}>
-            //     <label style={{ color: "white" }} >Recipient Address </label>
-            //     <input 
-            //       type='text'
-            //       placeholder='0x00... (optional) ' 
-            //       onChange= { (e) => recipientInput = e.target.value }
-            //       />
-            //   </Form.Field>
-
-            //   <Form.Field >
-            //     <label style={{ color: "white" }}>Description</label>
-            //     <input 
-            //       type='text'
-            //       placeholder='Brief description of document. (optional)' 
-            //       onChange= { (e) => descriptionInput = e.target.value }
-            //       />
-            //   </Form.Field>
-
-            //   <Form.Field style={{textAlign: 'center'}}>
-            //   <Button primary type='submit'
-            //   disabled = { !userInput }       
-            //         style={{ 
-            //           marginBottom: '5em',
-            //           marginTop: '1em',
-            //           fontSize: 'large'
-            //           }}> 
-            //       Upload certificate to the ethereum blockchain
-            //     </Button>
-            //   </Form.Field>
-            // </Form>
-
-            // { loading ? 
-            //     <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
-            //     LOADING....  
-            //     </Segment>
-            //     :
-            //     null
-            //   }   
-
-      //     </Grid.Column> 
-      // </Grid>
-
-      // : 
-
-      // <Segment placeholder color='red'
-      // style={{ 
-      //   marginBottom: '3em',
-      //   marginTop: '5.7em',
-      //   fontSize: 'large', 
-      //   textAlign: "center"
-      //   }}>
-      // <Header>
-      //     Please connect with your Ethereum wallet. 
-      // </Header>
-      // <br/>
-      //   Documents can only be certified while being logged in with an Ethereum wallet. 
-      // </Segment>
-  //   }
-  //   </Container>
-  //   )
-  //   }
-  // }
-
 export const RenderLeftTab = () => {
 
   const { tab } = useContext(UserContext);
@@ -360,10 +195,12 @@ export const RenderLeftTab = () => {
         fileReader.readAsDataURL(userFile);
         fileReader.onload = function () {
           result = fileReader.result; 
-          setUserInput(sha256(result).toString()); // sha256
-        };
-      
-      
+          // NB: Here the hashing is done! // 
+          setUserInput(utils.keccak256( utils.toUtf8Bytes(result) )); // 0x12, 0x34sha256 // sha256(result).toString()
+          console.log()
+        };    
+        
+        
 
       try {
         
@@ -719,14 +556,6 @@ export const RenderRigthTab = () => {
       </Button>
     </Form.Field>
   </Form>
-
-  // { loading ? 
-  //     <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
-  //     LOADING....  
-  //     </Segment>
-  //     :
-  //     null
-  //     }
     )
   }
 }
