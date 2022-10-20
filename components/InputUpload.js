@@ -5,9 +5,8 @@ import { useContext } from "react";
 import React from "react";
 import { utils } from "ethers"; 
 
-let recipientInput; 
-let descriptionInput; 
-
+let recipientInput = '0x0000000000000000000000000000000000000000'; 
+let descriptionInput = ' '; 
 
 const InputUpload = ({ certify }) => {
 
@@ -26,11 +25,8 @@ const InputUpload = ({ certify }) => {
         }
     }
 
-    const onSubmit = async (e) => {
-           
+    const onSubmit = async (e) => {    
         certify([userInput, recipientInput, descriptionInput])
-    
-        console.log(userInput)
       };
 
     if (tab == 'Certify') {
@@ -132,6 +128,7 @@ const InputUpload = ({ certify }) => {
                                 </Form.Field>
                                 <Form.Field  style={{ marginTop: '2em' }}>
                                     <Button fluid primary type='submit'
+                                            loading = { loading != null } 
                                             disabled = { !userInput } 
                                             style={{     
                                             fontSize: 'large'

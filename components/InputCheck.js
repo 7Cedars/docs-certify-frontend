@@ -11,17 +11,18 @@ const InputCheck = ({ handleSubmit }) => {
   const { setUserInput, tab, userInput, loading } = useContext(UserContext);
 
   const changeHandler = async (e) => {
+
     fileInput = e.target.files[0]; 
     let fileReader = false;
     let result; 
-
+  
     fileReader = new FileReader();
     fileReader.readAsDataURL(fileInput);
     fileReader.onload = function () {
     result = fileReader.result; 
     // NB: Here the hashing is done! // 
     setUserInput(utils.keccak256( utils.toUtf8Bytes(result) )); // 0x12, 0x34sha256 // sha256(result).toString()
-    console.log(userInput)
+    // console.log(utils.keccak256( utils.toUtf8Bytes(result))) 
     }
   }
 
@@ -52,7 +53,7 @@ const InputCheck = ({ handleSubmit }) => {
                             onChange = {(e) => setUserInput(e.target.value)} 
                             >
                             </Form.Input>
-                        <Button primary loading = { loading }
+                        <Button primary loading = { (loading != null) }
                             style={{
                             marginBottom: '2em',
                             marginTop: '1em',
@@ -83,18 +84,13 @@ const InputCheck = ({ handleSubmit }) => {
                       marginTop: '.5em', marginBottom: '0em' 
                       }}>
                     </Icon>
-                    <Form > 
+                    <Form onSubmit = { handleSubmit } > 
                         <input
                           type="file"                    
                           single="true"
                           onChange={ changeHandler }
                         />
-                        </Form>
-                        </Container>
-                    <Container >
-                    <Form onSubmit = { handleSubmit }>
-                      <Button primary 
-                          loading = { loading }
+                      <Button primary loading = { (loading != null)  }
                           style={{
                           marginBottom: '2em',
                           marginTop: '1em',

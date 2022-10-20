@@ -18,8 +18,7 @@ import 'semantic-ui-css/semantic.min.css';
 export default function Home() {
 
   const [tab, setTab] = useState('Home');
-  const [loading, setLoading] = useState(false);
-  const [complete, setComplete] = useState(false);
+  const [loading, setLoading] = useState();
 
   const [requestConnect, setRequestConnect] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
@@ -28,8 +27,6 @@ export default function Home() {
 
   const [certificatesArray, setCertificatesArray] = useState(null);
   const [userInput, setUserInput] = useState('');
-  const [userFile, setUserFile] = useState('');
-  const [fileDataURL, setFileDataURL] = useState(null);
 
   const getProviderOrSigner = async () => {
 
@@ -55,7 +52,7 @@ export default function Home() {
       });
 
       const provider = await web3ModalRef.current.connect();
-      const web3Provider = new providers.Web3Provider(provider);
+      const web3Provider = new providers.Web3Provider(provider);  
 
       const { chainId } = await web3Provider.getNetwork();
 
@@ -95,7 +92,7 @@ export default function Home() {
 
  const certify = async (userInput) => {
 
-  setLoading(true)
+  setLoading('upload')
 
     try {
       // get provider or signer.
@@ -111,7 +108,8 @@ export default function Home() {
       console.error(err.message);
     }
 
-    setLoading(false)
+  setLoading(null)
+
   }
 
   const checkDocHash = async (userInput) => {
@@ -167,22 +165,26 @@ export default function Home() {
   const callCertificate = async (index) => {
 
     try {
-      // get provider or signer.
       const provider = await getProviderOrSigner();
-      // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      // call function in contract. 
       const data = await dcContract.callCertificate(parseInt(index));
+
       const dateTimeObj = new Date(parseInt(data[4] * 1000))
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
+      // this is a bit ugly, but it works. 
       const certificate = {
         id: index,
         docHash: data[0],
-        issuer: data[1],
-        recipient: data[2],
-        description: data[3],
-        dateTime: `${dateTimeObj.getDay()} ${monthNames[(dateTimeObj.getMonth() + 1)]} ${dateTimeObj.getFullYear()}`
+        issuer: (parseInt(data[4]) === 0) ?  
+          `Issuer: N/A` : `Issuer: ${data[1]}`,
+        recipient: data[2] === '0x0000000000000000000000000000000000000000' ? 
+          `Recipient: N/A` : `Recipient: ${data[2]}`,
+        description: (parseInt(data[4]) === 0) ? 
+          `Description: N/A` : `Description: ${data[3]}`,
+        dateTime: (parseInt(data[4]) === 0) ?  
+          `Certificate has been revoked` : 
+          `Certicate issued on: ${new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(dateTimeObj)}`
       }
 
       return (certificate)
@@ -193,7 +195,7 @@ export default function Home() {
   }
 
   const revokeCertificate = async (index) => {
-    setLoading(true)
+    setLoading(index)
     try {
       // get provider or signer.
       const provider = await getProviderOrSigner();
@@ -206,13 +208,12 @@ export default function Home() {
       console.error(err.message);
     }
 
-    setLoading(true)
-    setComplete(false)
+    setLoading(null)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
-    setLoading(true)
+    setLoading(e)
 
     let certificates = [];
     let data = []
@@ -232,16 +233,31 @@ export default function Home() {
     //     let _certificate = await callCertificate( parseInt(item) )
     //     certificates.concat(_certificate)
     // })
-    for (let i = 0; i < data.length; i++) {
+    
+    if (data.length === 0) {
       certificates.push(
-        await callCertificate( parseInt(data[i]) - 1)
-        );
-      }
-        
-    setCertificatesArray(certificates)
-    console.log("certificatesArray: ", certificates)
+        {
+          id: 0,
+          issuer: ` `,
+          recipient: ` `,
+          description: ['If you did expect a certificate, a few things might have happened:', <br/>,
+                        '1) The address has been mispelled or the uploaded document is not the original.', <br/>,
+                        '2) The certificate was not succesfully uploaded.', <br/>,
+                        '3) There is a bug in this program.', <br/>],
+          dateTime: `No certificates found`
+        }
+      )
+    }
 
-    setLoading(false)
+      for (let i = 0; i < data.length; i++) {
+        certificates.push(
+          await callCertificate( parseInt(data[i]) - 1)
+          ); 
+      }
+          
+    console.log("certificatesArray: ", certificates)
+    setCertificatesArray(certificates)
+    setLoading(null)
   }
 
   useEffect(() => {
@@ -258,11 +274,11 @@ export default function Home() {
         <UserContext.Provider value={{ 
           tab, setTab,
           loading, setLoading, 
-          complete, setComplete, 
           userInput, setUserInput, 
-          walletConnected }}> 
+          walletConnected, walletAddress }}> 
         <NavBar walletConnected = {walletConnected} setRequestConnect = {setRequestConnect} />
         <FrontPage />
+        <InputUpload certify = {certify} /> 
         { tab == 'DocHash_Certs'||
           tab == 'Issued_Certs'||
           tab == 'Received_Certs' ? 
@@ -281,7 +297,6 @@ export default function Home() {
                             certificate => <RenderCertificate
                               key = {certificate.id} 
                               certificate = {certificate}
-                              walletAddress = {walletAddress}
                               revokeCertificate = {() => revokeCertificate(certificate.id) }
                               /> 
                           ) 
@@ -293,7 +308,6 @@ export default function Home() {
           :
             <></>
         }
-        <InputUpload certify = {certify} /> 
         </UserContext.Provider>
         </div>
       )
