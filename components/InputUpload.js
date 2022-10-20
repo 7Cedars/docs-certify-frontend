@@ -1,5 +1,4 @@
-// import statements here... 
-import { Container, Header, Button, Icon, Segment, Form, Grid, Input, Image } from "semantic-ui-react"; 
+import { Container, Header, Button, Icon, Segment, Form, Grid, Input } from "semantic-ui-react"; 
 import { UserContext} from "./userContext";
 import { useContext } from "react";
 import React from "react";
@@ -10,7 +9,7 @@ let descriptionInput = ' ';
 
 const InputUpload = ({ certify }) => {
 
-    const { tab, walletConnected, loading, userInput, setUserInput } = useContext( UserContext );
+    const { tab, walletConnected, loading, userInput, setUserInput, setMessage } = useContext( UserContext );
 
     const changeHandler = async (e) => {
         let fileInput = e.target.files[0]; 
@@ -29,33 +28,11 @@ const InputUpload = ({ certify }) => {
         certify([userInput, recipientInput, descriptionInput])
       };
 
-    if (tab == 'Certify') {
-            
+    if (tab === 'Certify') {
+
         return (
             <Container textAlign = 'center' >
-                { !walletConnected ?
-                <Segment color = 'red' 
-                    style = {{
-                        marginTop: '5em',
-                        fontSize: 'large', 
-                     }}>
-                    <Header as='h3' 
-                        style = {{ 
-                        color: "black",
-                        marginBottom: '.5em', }}> 
-                    Please connect your Ethereum wallet to this website.
-                    </Header>
-                    Documents can only be certified while being logged in with an Ethereum wallet.
-                </Segment >
-                 :
-                <Segment style = {{
-                    marginTop: '6.5em',
-                    fontSize: 'large', 
-                    opacity: '0%'
-                 }}>
-                    ...
-                </Segment> 
-                }
+            
               <Grid padded>
                 <Grid.Column width = '8' > 
                     <Container className="userInputBox"> 
@@ -63,7 +40,7 @@ const InputUpload = ({ certify }) => {
                                 textAlign = 'center' 
                                 disabled = { !walletConnected } 
                                 style={{ 
-                                    marginBottom: '0em',
+                                    marginTop: '.5em',
                                     fontSize: 'large'
                                 }}>
                             <Container >
@@ -94,7 +71,8 @@ const InputUpload = ({ certify }) => {
                         <Segment textAlign = 'left' 
                                 disabled = { !walletConnected } 
                                 style={{  
-                                fontSize: 'large'
+                                fontSize: 'large',
+                                marginTop: '.5em'
                             }}>
                             <Form onSubmit = { onSubmit } 
                                     style={{ fontSize: 'large' }}>
@@ -141,9 +119,6 @@ const InputUpload = ({ certify }) => {
                         </Container>
                     </Grid.Column> 
                 </Grid>
-                    <Form >
-                        
-                    </Form>
             </Container>         
         )
     }

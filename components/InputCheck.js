@@ -1,4 +1,3 @@
-
 import React, { useContext } from "react";
 import { UserContext } from "../components/userContext";
 import { Container, Button, Icon, Segment, Form, Input } from "semantic-ui-react"; 
@@ -33,7 +32,7 @@ const InputCheck = ({ handleSubmit }) => {
             <Container className="userInputBox">
                 <Segment placeholder textAlign = 'center' style={{
                     marginBottom: '5em',
-                    marginTop: '10.5em',
+                    marginTop: '.5em',
                     fontSize: 'large'
                     }}>
                         <Container >
@@ -76,7 +75,7 @@ const InputCheck = ({ handleSubmit }) => {
           <Container className="userInputBox">
           <Segment placeholder textAlign = 'center' style={{
               marginBottom: '5em',
-              marginTop: '10.5em',
+              marginTop: '.5em',
               fontSize: 'large'
               }}> 
                   <Container >

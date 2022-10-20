@@ -2,23 +2,30 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ethers, BigNumber } from "ethers"; 
 import { UserContext, Web3ModalContext } from "../components/userContext";
-import { RenderRigthTab } from "../components/renderTabs";
-import { NavBar } from "../components/navBar";
-import Web3Modal, { PROVIDER_ICON_CLASSNAME } from "web3modal";
+import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
 import { Contract, providers, utils } from "ethers";
 import { Container, Grid, Card } from "semantic-ui-react"; 
-import  bg from "../assets/images/background3.jpg"
+
+import bg from "../assets/images/background3.jpg"
+import NavBar  from "../components/navBar";
 import FrontPage from "../components/FrontPage";
 import RenderCertificate from "../components/RenderCertificate"
 import InputCheck from "../components/InputCheck"
 import InputUpload from "../components/InputUpload"
+import Messages from "../components/Messages";
 import 'semantic-ui-css/semantic.min.css';
 
 export default function Home() {
 
   const [tab, setTab] = useState('Home');
   const [loading, setLoading] = useState();
+  const [message, setMessage] = useState({
+    color: 'green',
+    primary: 'message1', 
+    secondary: 'message2',
+    visible: false
+  });
 
   const [requestConnect, setRequestConnect] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
@@ -96,11 +103,9 @@ export default function Home() {
 
     try {
       // get provider or signer.
-      const provider = await getProviderOrSigner();
-     
+      const provider = await getProviderOrSigner();     
       // create link to contract.
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      
+      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);      
       // call function in contract.      
       await dcContract.certify(userInput[0], userInput[1], userInput[2]);
 
@@ -109,7 +114,12 @@ export default function Home() {
     }
 
   setLoading(null)
-
+  setMessage(
+    {color: 'green',
+      primary: 'Upload succesfull',
+      secondary: 'Your certificate has been succesfully uploaded to the Ethereum blockchain',
+      visible: true}
+    )
   }
 
   const checkDocHash = async (userInput) => {
@@ -154,7 +164,7 @@ export default function Home() {
       // call function in contract. 
       const certificateIndex = await dcContract.checkRecipient(userInput);
       // certificateIndex.keys
-      console.log("certificateIndex:", certificateIndex)
+     
       return certificateIndex
       
     } catch (err) {
@@ -233,26 +243,35 @@ export default function Home() {
     //     let _certificate = await callCertificate( parseInt(item) )
     //     certificates.concat(_certificate)
     // })
-    
-    if (data.length === 0) {
-      certificates.push(
-        {
-          id: 0,
-          issuer: ` `,
-          recipient: ` `,
-          description: ['If you did expect a certificate, a few things might have happened:', <br/>,
-                        '1) The address has been mispelled or the uploaded document is not the original.', <br/>,
-                        '2) The certificate was not succesfully uploaded.', <br/>,
-                        '3) There is a bug in this program.', <br/>],
-          dateTime: `No certificates found`
-        }
-      )
-    }
-
-      for (let i = 0; i < data.length; i++) {
+    try { 
+      if (data.length === 0) {
         certificates.push(
-          await callCertificate( parseInt(data[i]) - 1)
-          ); 
+          {
+            id: 0,
+            issuer: ` `,
+            recipient: ` `,
+            description: ['If you did expect a certificate, a few things might have happened:', <br/>,
+                          '1) The address has been mispelled or the uploaded document is not the original.', <br/>,
+                          '2) The certificate was not succesfully uploaded.', <br/>,
+                          '3) There is a bug in this program.', <br/>],
+            dateTime: `No certificates found`
+          }
+        )
+      }
+
+        for (let i = 0; i < data.length; i++) {
+          certificates.push(
+            await callCertificate( parseInt(data[i]) - 1)
+            ); 
+        }
+      } catch (err) {
+        setMessage({
+          color: 'red',
+          primary: 'No user input provided', 
+          secondary: 'Please insert an address or document.', 
+          visible: true
+        }
+        )
       }
           
     console.log("certificatesArray: ", certificates)
@@ -263,6 +282,12 @@ export default function Home() {
   useEffect(() => {
     setCertificatesArray(null)
     setUserInput(null)
+    setMessage([{
+      color: 'green',
+      primary: 'message1', 
+      secondary: 'message2',
+      visible: false
+    }])
   }, [tab]); 
 
   useEffect(() => {
@@ -275,8 +300,10 @@ export default function Home() {
           tab, setTab,
           loading, setLoading, 
           userInput, setUserInput, 
-          walletConnected, walletAddress }}> 
+          walletConnected, walletAddress, 
+          message, setMessage }}> 
         <NavBar walletConnected = {walletConnected} setRequestConnect = {setRequestConnect} />
+        <Messages /> 
         <FrontPage />
         <InputUpload certify = {certify} /> 
         { tab == 'DocHash_Certs'||
@@ -290,7 +317,7 @@ export default function Home() {
                 <Grid.Column width = '8'> 
                 <Card.Group 
                       style={{
-                        marginTop: '12.7em',
+                        marginTop: '.5em',
                       }} > 
                       { certificatesArray ?
                            certificatesArray.map(

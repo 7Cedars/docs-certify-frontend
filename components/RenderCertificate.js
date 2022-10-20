@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Header, Button,  Segment, Popup, Card, Container } from "semantic-ui-react"; 
+import { Header, Button, Card } from "semantic-ui-react"; 
 import { UserContext } from "../components/userContext";
 import 'semantic-ui-css/semantic.min.css';
 

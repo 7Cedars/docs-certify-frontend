@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
-import { UserContext, Web3ModalContext } from "./userContext";
-import { Button, Grid, Container, Icon, Menu } from "semantic-ui-react";
+import React, { useContext } from "react";
+import { UserContext } from "./userContext";
+import { Button, Grid, Icon, Menu } from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
 
 
@@ -76,12 +76,11 @@ export function NavBar( { walletConnected, setRequestConnect } ) {
                         </Menu>
                     </Grid.Row>
                 </Grid>
-
                 <Menu.Item >
                     { renderButton() }
                 </Menu.Item>   
-
             </Menu>
-    ); // // positive = { connected }
+    );
 };
 
+export default NavBar
