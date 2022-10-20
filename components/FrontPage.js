@@ -16,13 +16,13 @@ const FrontPage = () => {
               <Container className="userInputBox"  >
         <Segment basic textAlign = 'right' style={{
             marginBottom: '3em',
-            marginTop: '5em',
+            marginTop: '10.5em',
             fontSize: 'large',
             color: "none"
             }}>
         <Header
             as='h1'
-            content='Certify.xyz' 
+            content='Certify.doc' 
             style={{
             fontSize: '4em',
             fontWeight: 'normal',
@@ -60,7 +60,7 @@ const FrontPage = () => {
             <Container className="userInputBox"  >
                 <Segment basic textAlign = 'left' style={{
                     marginBottom: '3em',
-                    marginTop: '6.5em',
+                    marginTop: '12em',
                     fontSize: 'large',
                     color: "none"
                     }}>

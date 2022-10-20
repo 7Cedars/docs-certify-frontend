@@ -31,7 +31,7 @@ const renderListCertificates  = (certificatesArray) => {
       if (complete == false) {
       
       return (
-        <div className='ui two buttons'>
+        <div className='ui two buttons'> 
           <Popup
             trigger = { 
               <Button basic color='red' content = 'revoke' />  
