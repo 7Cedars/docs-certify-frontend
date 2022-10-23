@@ -19,12 +19,13 @@ const Messages = () => {
                 opacity: message.visible? '100%' : '0%'
             }}>
                 <Header as='h3' 
+                    color = {message.color} 
                     style = {{ 
-                    color: "black",
                     marginBottom: '.5em', }}> 
                     {message.primary}
                 </Header>
-                {message.secondary}
+                {message.secondary} <br /> 
+                {message.error ? `Full error message: ${message.error}` : null } 
             </Segment> 
         </Container>
     )

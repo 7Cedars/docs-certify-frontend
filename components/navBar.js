@@ -1,22 +1,26 @@
 import React, { useContext } from "react";
 import { UserContext } from "./userContext";
-import { Button, Grid, Icon, Menu } from "semantic-ui-react";
+import { Button, Grid, Icon, Menu, Segment } from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
 
+// creates the Navbar at the top of the page. 
+const NavBar = ({ connectWallet }) => {
 
-export function NavBar( { walletConnected, setRequestConnect } ) {
+    // navbar interacts with three contextual elements: tab and settab (reading and setting selected tab) 
+    // and walletAddress: logging in with a wallet. 
+    const { tab, setTab, walletAddress } = useContext(UserContext);
 
-    const { tab, setTab } = useContext(UserContext);
-
+    // The login button changes appearance with user being logged in or not.
+    // Login is assessed by (non)existance of const walletAddress. 
     const renderButton = () => {
 
         // If wallet is not connected, return a button which allows them to connect their wllet
-        if (!walletConnected) {
+        if (!walletAddress) {
 
           return (
-            <div> 
-            <Button  primary onClick={() => setRequestConnect(true) } > 
-                Connect Wallet
+            <div>
+            <Button  primary onClick={ connectWallet } > 
+                Connect (Currently in Read Only Mode)
             </Button>
             </div>
           );
@@ -24,17 +28,21 @@ export function NavBar( { walletConnected, setRequestConnect } ) {
     
         // If wallet is  connected, return a green button that states wallet connected. 
         // Button does ntot have any functionality at the moment. 
-        if (walletConnected) {
+        if (walletAddress) {
+
             return (
             <div> 
               <Button  positive > 
-                Wallet Connected
+                Connected to: {walletAddress.substring(0,5)}...{walletAddress.substring(38,42)}  
+                {/* .substring(0,5) */}
               </Button>
               </div>
             );
           }
         }
 
+    // Renders the navbar. 
+    // per item, if clicked, setTab is set to the name of the tab. 
     return (        
             <Menu fixed='top'  >
                 <Menu.Item 
@@ -76,6 +84,7 @@ export function NavBar( { walletConnected, setRequestConnect } ) {
                         </Menu>
                     </Grid.Row>
                 </Grid>
+                 {/* rendering the login button created above */}
                 <Menu.Item >
                     { renderButton() }
                 </Menu.Item>   

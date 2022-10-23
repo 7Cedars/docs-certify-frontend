@@ -1,7 +1,19 @@
+/*
+This is a simple utility that lets users issue and check certificates of authenticity for offline documents. 
+Important functional characteristics of the dapp: 
+Users can use the app - in read-only mode - without having an ethereum wallet installed. 
+If they wish to issue a certificate, they are introduced to MetaMask, 
+Including a link and explanation. 
+
+please note:
+I built the app while learning solidity and js. It is an personal educational project.  
+For an extensive explanation of the app and its aims, see the readme file and about section in the app
+*/ 
+
 // import styles from "../styles/Home.module.css";
 import React, { useState, useRef, useEffect } from "react";
-import { ethers, BigNumber } from "ethers"; 
-import { UserContext, Web3ModalContext } from "../components/userContext";
+import { ethers } from "ethers"; 
+import { UserContext } from "../components/userContext";
 import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
 import { Contract, providers, utils } from "ethers";
@@ -16,6 +28,7 @@ import InputUpload from "../components/InputUpload"
 import Messages from "../components/Messages";
 import 'semantic-ui-css/semantic.min.css';
 
+
 export default function Home() {
 
   const [tab, setTab] = useState('Home');
@@ -24,33 +37,30 @@ export default function Home() {
     color: 'green',
     primary: 'message1', 
     secondary: 'message2',
-    visible: false
+    visible: false, 
+    error: ''
   });
-
-  const [requestConnect, setRequestConnect] = useState(false);
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState();
-  const web3ModalRef = useRef();
-
+  const [walletAddress, setWalletAddress] = useState(null);
   const [certificatesArray, setCertificatesArray] = useState(null);
   const [userInput, setUserInput] = useState('');
+  const web3ModalRef = useRef();
 
-  const getProviderOrSigner = async () => {
+  const getProvider = async () => {
 
-    if (!walletConnected) {
       // create a default, read only, provider. This way dapp is usable without having a web3 wallet. 
-      web3ModalRef.current = new ethers.getDefaultProvider(
+      // somehow, the connection does not quite work correctly yet. 
+      web3ModalRef.current = new ethers.getDefaultProvider( // 
         "goerli", 
         // ${process.env.REACT_APP_ALCHEMY_API_KEY} 
-        {alchemy: `CBr2qzLP-lXUxJFiPwPZvLJIGrv-mMt-`})
+        {alchemy: 'CBr2qzLP-lXUxJFiPwPZvLJIGrv-mMt-'})
       const web3Provider = web3ModalRef.current
 
-      console.log(web3Provider)
+      console.log('web3 provider:', web3Provider)
       
       return web3Provider;
-    }
-    
-    if (walletConnected) {
+  }
+
+  const getSigner = async () => {
 
       web3ModalRef.current = new Web3Modal({
         network: "goerli",
@@ -61,72 +71,80 @@ export default function Home() {
       const provider = await web3ModalRef.current.connect();
       const web3Provider = new providers.Web3Provider(provider);  
 
+      console.log('web3 signer:', web3Provider)
+
       const { chainId } = await web3Provider.getNetwork();
 
       if (chainId !== 5) {
-        window.alert("Change the network to Goerli");
+        setMessage(
+          {color: 'red',
+            primary: 'Change the network to Goerli.',
+            secondary: 'This app needs MetaMask to be installed.',
+            visible: true}
+          )
         throw new Error("Change network to Goerli");
-      }      
+      }
 
       const signer = web3Provider.getSigner();
-      let walletAddress = await signer.getAddress();
-      setWalletAddress(walletAddress)
-      
       return signer;
     }
-  };
 
+  // See here for answer: https://docs.metamask.io/guide/ethereum-provider.html#using-the-provider
   const connectWallet = async () => {
+      try {
 
-    try {
-      await getProviderOrSigner();
-      setWalletConnected(true);
-    } catch (err) {
-      console.error(err);
+        const signer = await getSigner(); 
+        let walletAddress = await signer.getAddress();
+        setWalletAddress(walletAddress)
+        
+      } catch (err) {
+        console.error(err);
+      }
     }
-  };
 
-  useEffect(() => {
-    if (requestConnect) {     
-      connectWallet();
-      setRequestConnect(false)
-    }
-  }, [requestConnect]);
-
-  useEffect(() => {
-    getProviderOrSigner()
-  }, []);
-
- const certify = async (userInput) => {
-
-  setLoading('upload')
+  const certify = async (userInput) => {
+    setLoading('upload')
 
     try {
       // get provider or signer.
-      const provider = await getProviderOrSigner();     
+      const provider = await getSigner();     
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);      
       // call function in contract.      
-      await dcContract.certify(userInput[0], userInput[1], userInput[2]);
+      let tx = await dcContract.certify(userInput[0], userInput[1], userInput[2]);
+      setMessage(
+        {color: 'blue',
+          primary: 'Currently uploading certificate to the blockchain.',
+          secondary: 'This can take a few minutes.',
+          visible: true}
+        )
+      // console.log(tx.hash) 
 
-    } catch (err) {
+      await tx.wait();
+      setMessage(
+        {color: 'green',
+          primary: 'Upload succesfull',
+          secondary: 'Your certificate has been succesfully uploaded to the Ethereum blockchain',
+          error: err.message, 
+          visible: true}
+        )
+      setTimeout(() => { 
+        setMessage({visible: false}) 
+        setUserInput('') 
+      }, 5000)
+
+    } catch (err) { 
       console.error(err.message);
     }
 
   setLoading(null)
-  setMessage(
-    {color: 'green',
-      primary: 'Upload succesfull',
-      secondary: 'Your certificate has been succesfully uploaded to the Ethereum blockchain',
-      visible: true}
-    )
   }
 
   const checkDocHash = async (userInput) => {
 
     try {
       // get provider or signer.
-      const provider = await getProviderOrSigner();
+      const provider = await getProvider();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
@@ -142,7 +160,7 @@ export default function Home() {
   const checkIssuer = async (userInput) => {
     try {
       // get provider or signer.
-      const provider = await getProviderOrSigner();
+      const provider = await getProvider();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
@@ -158,7 +176,7 @@ export default function Home() {
   const checkRecipient = async (userInput) => {
     try {
       // get provider or signer.
-      const provider = await getProviderOrSigner();
+      const provider = await getProvider();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
@@ -175,26 +193,22 @@ export default function Home() {
   const callCertificate = async (index) => {
 
     try {
-      const provider = await getProviderOrSigner();
+      const provider = await getProvider();
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       const data = await dcContract.callCertificate(parseInt(index));
 
       const dateTimeObj = new Date(parseInt(data[4] * 1000))
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-      // this is a bit ugly, but it works. 
       const certificate = {
         id: index,
         docHash: data[0],
-        issuer: (parseInt(data[4]) === 0) ?  
-          `Issuer: N/A` : `Issuer: ${data[1]}`,
+        issuer: `Issuer: ${data[1]}`,
         recipient: data[2] === '0x0000000000000000000000000000000000000000' ? 
           `Recipient: N/A` : `Recipient: ${data[2]}`,
-        description: (parseInt(data[4]) === 0) ? 
+        description: (parseInt(data[3]) === '') ? 
           `Description: N/A` : `Description: ${data[3]}`,
-        dateTime: (parseInt(data[4]) === 0) ?  
-          `Certificate has been revoked` : 
-          `Certicate issued on: ${new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(dateTimeObj)}`
+        dateTime: `Certicate issued on: ${new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(dateTimeObj)}`
       }
 
       return (certificate)
@@ -206,24 +220,39 @@ export default function Home() {
 
   const revokeCertificate = async (index) => {
     setLoading(index)
+    
     try {
       // get provider or signer.
-      const provider = await getProviderOrSigner();
+      const provider = await getSigner();
       // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
       // call function in contract. 
-      await dcContract.revokeCertificate(index);
+      let tx = await dcContract.revokeCertificate(index);
+      
+      setMessage(
+        {color: 'blue',
+          primary: 'Currently revoking certificate.',
+          secondary: 'This can take a few minutes.',
+          visible: true}
+        )
+      await tx.wait();
 
     } catch (err) {
       console.error(err.message);
     }
-
+    setMessage(
+      {color: 'green',
+        primary: 'Revoke succesfull.',
+        secondary: 'Your certificate has been succesfully revoked.',
+        visible: true}
+      )
     setLoading(null)
+    setTimeout(() => { setMessage({visible: false}) }, 5000)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
-    setLoading(e)
+    setLoading('loading')
 
     let certificates = [];
     let data = []
@@ -272,27 +301,24 @@ export default function Home() {
           visible: true
         }
         )
+        setTimeout(() => { setMessage({visible: false}) }, 5000)
       }
           
     console.log("certificatesArray: ", certificates)
     setCertificatesArray(certificates)
     setLoading(null)
+    setUserInput(null)
   }
+
+  useEffect(() => {
+    getProvider();
+    document.body.style.backgroundImage = `url(${bg.src})`; // `url(${background2})`;
+  }, []);
 
   useEffect(() => {
     setCertificatesArray(null)
     setUserInput(null)
-    setMessage([{
-      color: 'green',
-      primary: 'message1', 
-      secondary: 'message2',
-      visible: false
-    }])
   }, [tab]); 
-
-  useEffect(() => {
-    document.body.style.backgroundImage = `url(${bg.src})`; // `url(${background2})`;
-  }, []);
 
   return (
       <div > 
@@ -300,9 +326,10 @@ export default function Home() {
           tab, setTab,
           loading, setLoading, 
           userInput, setUserInput, 
-          walletConnected, walletAddress, 
+          walletAddress, 
           message, setMessage }}> 
-        <NavBar walletConnected = {walletConnected} setRequestConnect = {setRequestConnect} />
+        <NavBar connectWallet = {connectWallet} /> 
+        {/* () => connectWallet() */}
         <Messages /> 
         <FrontPage />
         <InputUpload certify = {certify} /> 
@@ -341,8 +368,7 @@ export default function Home() {
   } 
 
 // References: 
-// <WalletConnected.Provider value={{ walletConnected, setWalletConnected }}> 
-// https://codesandbox.io/s/j43b10?file=/src/App.js:469-571 // </WalletConnected.Provider>
+// https://codesandbox.io/s/j43b10?file=/src/App.js:469-571 // 
 // sandbox example: https://codesandbox.io/s/j43b10?file=/src/App.js (not with react though, needed to add useEffect)
 // main part is from web3dao learning course. -- the useContext tick is from youtube: https://www.youtube.com/watch?v=vYWMyOyrbYU
 

@@ -5,15 +5,19 @@ import 'semantic-ui-css/semantic.min.css';
 
 const RenderCertificate  = ({ certificate, revokeCertificate }) => {
   const { loading, walletAddress } = useContext(UserContext);
-  console.log( walletAddress )
+  console.log('certificate.id:', certificate.id )
 
   const optionalContent = (
-         <div className='ui two buttons'>
-            <Button basic color='red' content = 'revoke' onClick={ revokeCertificate } />  
-        </div>  
+    <Card.Content extra>
+        <div className='ui two buttons'>
+          <Button basic color='red' content = 'revoke' onClick={ revokeCertificate } loading = {loading === certificate.id} />  
+      </div>  
+    </Card.Content>
   )
 
-  return (
+  if (certificate.issuer != 'Issuer: 0x0000000000000000000000000000000000000000') {
+
+    return (
     
       <Card overflowwrap = 'break-word' fluid >
         <Card.Content>
@@ -24,13 +28,12 @@ const RenderCertificate  = ({ certificate, revokeCertificate }) => {
             <Header as='h4'> {certificate.description} </Header>
           </Card.Description>
         </Card.Content>
-        <Card.Content extra>
           { certificate.issuer == `Issuer: ${walletAddress}` ||
             certificate.recipient == `Recipient: ${walletAddress}`? 
             optionalContent : null }
-        </Card.Content> 
       </Card>
     )
+    }
 }
 
 export default RenderCertificate

@@ -9,7 +9,7 @@ let descriptionInput = ' ';
 
 const InputUpload = ({ certify }) => {
 
-    const { tab, walletConnected, loading, userInput, setUserInput, setMessage } = useContext( UserContext );
+    const { tab, loading, userInput, setUserInput, setMessage } = useContext( UserContext );
 
     const changeHandler = async (e) => {
         let fileInput = e.target.files[0]; 
@@ -38,7 +38,7 @@ const InputUpload = ({ certify }) => {
                     <Container className="userInputBox"> 
                         <Segment placeholder 
                                 textAlign = 'center' 
-                                disabled = { !walletConnected } 
+                             //   disabled = { !walletConnected } 
                                 style={{ 
                                     marginTop: '.5em',
                                     fontSize: 'large'
@@ -50,7 +50,6 @@ const InputUpload = ({ certify }) => {
                             </Icon>
                             <Form >
                                 <Input
-                                    disabled = { !walletConnected }
                                     type="file"                 
                                     single="true"
                                     onChange={ changeHandler }
@@ -69,7 +68,6 @@ const InputUpload = ({ certify }) => {
                 <Grid.Column width = '8'> 
                     <Container className="userInputBox"> 
                         <Segment textAlign = 'left' 
-                                disabled = { !walletConnected } 
                                 style={{  
                                 fontSize: 'large',
                                 marginTop: '.5em'
@@ -89,7 +87,6 @@ const InputUpload = ({ certify }) => {
                                 <Form.Field  style={{ marginTop: '2em' }}>
                                 <label style={{ color: "black" }} >Recipient Address </label>
                                 <input 
-                                    disabled = { !walletConnected }
                                     type='text'
                                     placeholder='0x00... (optional) ' 
                                     onChange= { (e) => recipientInput = e.target.value }
@@ -98,7 +95,6 @@ const InputUpload = ({ certify }) => {
                                 <Form.Field style={{ marginTop: '2em' }}>
                                 <label style={{ color: "black" }}>Description</label>
                                 <input 
-                                    disabled = { !walletConnected }
                                     type='text'
                                     placeholder='Brief description of document. (optional)' 
                                     onChange= { (e) => descriptionInput = e.target.value }

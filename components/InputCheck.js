@@ -52,7 +52,7 @@ const InputCheck = ({ handleSubmit }) => {
                             onChange = {(e) => setUserInput(e.target.value)} 
                             >
                             </Form.Input>
-                        <Button primary loading = { (loading != null) }
+                        <Button primary loading = { loading == 'loading' }
                             style={{
                             marginBottom: '2em',
                             marginTop: '1em',
@@ -89,7 +89,7 @@ const InputCheck = ({ handleSubmit }) => {
                           single="true"
                           onChange={ changeHandler }
                         />
-                      <Button primary loading = { (loading != null)  }
+                      <Button primary loading = { loading == 'loading'  }
                           style={{
                           marginBottom: '2em',
                           marginTop: '1em',
