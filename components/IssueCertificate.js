@@ -7,7 +7,7 @@ import { utils } from "ethers";
 let recipientInput = '0x0000000000000000000000000000000000000000'; 
 let descriptionInput = ' '; 
 
-const InputUpload = ({ certify }) => {
+const IssueCertificate = ({ certify }) => {
 
     const { tab, loading, userInput, setUserInput, setMessage } = useContext( UserContext );
 
@@ -120,4 +120,4 @@ const InputUpload = ({ certify }) => {
     }
   }
 
-export default InputUpload
+export default IssueCertificate

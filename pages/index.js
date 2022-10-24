@@ -10,41 +10,50 @@ I built the app while learning solidity and js. It is an personal educational pr
 For an extensive explanation of the app and its aims, see the readme file and about section in the app
 */ 
 
-// import styles from "../styles/Home.module.css";
+// importing dependencies. 
 import React, { useState, useRef, useEffect } from "react";
 import { ethers } from "ethers"; 
 import { UserContext } from "../components/userContext";
-import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, abi } from "../constants";
-import { Contract, providers, utils } from "ethers";
+import { Contract, providers } from "ethers";
 import { Container, Grid, Card } from "semantic-ui-react"; 
-
+import Web3Modal from "web3modal";
 import bg from "../assets/images/background3.jpg"
+import 'semantic-ui-css/semantic.min.css';
+
+// importing components. 
 import NavBar  from "../components/navBar";
 import FrontPage from "../components/FrontPage";
 import RenderCertificate from "../components/RenderCertificate"
-import InputCheck from "../components/InputCheck"
-import InputUpload from "../components/InputUpload"
+import CheckCertificates from "../components/CheckCertificates"
+import IssueCertificate from "../components/IssueCertificate"
 import Messages from "../components/Messages";
-import 'semantic-ui-css/semantic.min.css';
 
-
+// Setup
 export default function Home() {
-
+  
+  // PART 0: setting all state and ref constants of the page. 
+  // keeps track of what tab is selected. 
   const [tab, setTab] = useState('Home');
+  // keeps track if app is loading (most often waiting for blockchain interaction) 
   const [loading, setLoading] = useState();
-  const [message, setMessage] = useState({
-    color: 'green',
-    primary: 'message1', 
-    secondary: 'message2',
-    visible: false, 
-    error: ''
-  });
+  // keeps track of meesaging to users. Both error and success messages.  
+  const [message, setMessage] = useState('');
+  // keeps track if a wallet has been connected to the app, and if so - what address.  
   const [walletAddress, setWalletAddress] = useState(null);
-  const [certificatesArray, setCertificatesArray] = useState(null);
+  // array to store user input. 
   const [userInput, setUserInput] = useState('');
+  // array to save processed certificates returned from contract.  
+  const [certificatesArray, setCertificatesArray] = useState(null);
+  // references to web3 instance. 
   const web3ModalRef = useRef();
 
+/*
+initiate interaction with wallet. EITHER as provider (wallet not connected = read only) 
+OR as a signer (active mode, can issue and revoke certificates).
+*/
+  
+  // getting a default provider wallet  
   const getProvider = async () => {
 
       // create a default, read only, provider. This way dapp is usable without having a web3 wallet. 
@@ -60,6 +69,7 @@ export default function Home() {
       return web3Provider;
   }
 
+  // getting a specific signer wallet.   
   const getSigner = async () => {
 
       web3ModalRef.current = new Web3Modal({
@@ -76,62 +86,34 @@ export default function Home() {
       const { chainId } = await web3Provider.getNetwork();
 
       if (chainId !== 5) {
-        setMessage(
-          {color: 'red',
-            primary: 'Change the network to Goerli.',
-            secondary: 'This app needs MetaMask to be installed.',
-            visible: true}
-          )
+        setMessage("wrongNetwork")
         throw new Error("Change network to Goerli");
       }
 
       const signer = web3Provider.getSigner();
+      let walletAddress = await signer.getAddress();
+      setWalletAddress(walletAddress)
       return signer;
     }
 
-  // See here for answer: https://docs.metamask.io/guide/ethereum-provider.html#using-the-provider
-  const connectWallet = async () => {
-      try {
+/* 
+The following are functions to interact with ethereum contract. 
+*/
 
-        const signer = await getSigner(); 
-        let walletAddress = await signer.getAddress();
-        setWalletAddress(walletAddress)
-        
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
+  // issuing a new certificate. Signer is required. 
   const certify = async (userInput) => {
     setLoading('upload')
 
     try {
-      // get provider or signer.
-      const provider = await getSigner();     
-      // create link to contract.
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);      
-      // call function in contract.      
+      const signer = await getSigner();     
+      const dcContract = new Contract(CONTRACT_ADDRESS, abi, signer);       
       let tx = await dcContract.certify(userInput[0], userInput[1], userInput[2]);
-      setMessage(
-        {color: 'blue',
-          primary: 'Currently uploading certificate to the blockchain.',
-          secondary: 'This can take a few minutes.',
-          visible: true}
-        )
+      setMessage("uploadInProgress")
       // console.log(tx.hash) 
 
       await tx.wait();
-      setMessage(
-        {color: 'green',
-          primary: 'Upload succesfull',
-          secondary: 'Your certificate has been succesfully uploaded to the Ethereum blockchain',
-          error: err.message, 
-          visible: true}
-        )
-      setTimeout(() => { 
-        setMessage({visible: false}) 
-        setUserInput('') 
-      }, 5000)
+      setMessage("uploadSuccessful")
+      setTimeout(() => { setMessage('invisible') }, 5000)
 
     } catch (err) { 
       console.error(err.message);
@@ -140,16 +122,13 @@ export default function Home() {
   setLoading(null)
   }
 
+  // Checking certificates by docHash. Returns an array of indexes. Signer not required.
   const checkDocHash = async (userInput) => {
 
     try {
-      // get provider or signer.
       const provider = await getProvider();
-      // create link to contract.
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      // call function in contract. 
+      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider); 
       const certificateIndex = await dcContract.checkDocHash(userInput);
-
       return certificateIndex[0]
 
     } catch (err) {
@@ -157,13 +136,11 @@ export default function Home() {
     }
   }
 
+  // Checking certificates by address of issuer. Returns an array of indexes.  Signer not required.
   const checkIssuer = async (userInput) => {
     try {
-      // get provider or signer.
       const provider = await getProvider();
-      // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      // call function in contract. 
       const certificateIndex = await dcContract.checkIssuer(userInput);
 
       return certificateIndex
@@ -173,13 +150,11 @@ export default function Home() {
     }
   }
 
+  // Checking certificates by address of recipient. Returns an array of indexes.  Signer not required.
   const checkRecipient = async (userInput) => {
     try {
-      // get provider or signer.
       const provider = await getProvider();
-      // create link to contract.
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      // call function in contract. 
       const certificateIndex = await dcContract.checkRecipient(userInput);
       // certificateIndex.keys
      
@@ -190,6 +165,7 @@ export default function Home() {
     }
   }
 
+  // Takes an array of indexes, and calls each certificate. No signer required.
   const callCertificate = async (index) => {
 
     try {
@@ -218,38 +194,28 @@ export default function Home() {
     }
   }
 
+  // Revoke a certificate. Signer required. 
   const revokeCertificate = async (index) => {
     setLoading(index)
     
     try {
-      // get provider or signer.
-      const provider = await getSigner();
-      // create link to contract.
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      // call function in contract. 
+      const signer = await getSigner();
+      const dcContract = new Contract(CONTRACT_ADDRESS, abi, signer);
       let tx = await dcContract.revokeCertificate(index);
       
-      setMessage(
-        {color: 'blue',
-          primary: 'Currently revoking certificate.',
-          secondary: 'This can take a few minutes.',
-          visible: true}
-        )
+      setMessage("revokeInProgress")
       await tx.wait();
 
     } catch (err) {
       console.error(err.message);
     }
-    setMessage(
-      {color: 'green',
-        primary: 'Revoke succesfull.',
-        secondary: 'Your certificate has been succesfully revoked.',
-        visible: true}
-      )
+    setMessage("revokeSuccessful")
     setLoading(null)
-    setTimeout(() => { setMessage({visible: false}) }, 5000)
+    setTimeout(() => { setMessage('') }, 5000)
   }
 
+  // Passes user input to the requested (read only) function, based on the selected tab. 
+  // All these functions return index of certificates 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     setLoading('loading')
@@ -272,6 +238,8 @@ export default function Home() {
     //     let _certificate = await callCertificate( parseInt(item) )
     //     certificates.concat(_certificate)
     // })
+
+    // calls data of each certificate, based on index received from previous call. 
     try { 
       if (data.length === 0) {
         certificates.push(
@@ -282,7 +250,8 @@ export default function Home() {
             description: ['If you did expect a certificate, a few things might have happened:', <br/>,
                           '1) The address has been mispelled or the uploaded document is not the original.', <br/>,
                           '2) The certificate was not succesfully uploaded.', <br/>,
-                          '3) There is a bug in this program.', <br/>],
+                          '3) The certificate was revoked.', <br/>,  
+                          '4) There is a bug in the application.', <br/>],
             dateTime: `No certificates found`
           }
         )
@@ -294,14 +263,8 @@ export default function Home() {
             ); 
         }
       } catch (err) {
-        setMessage({
-          color: 'red',
-          primary: 'No user input provided', 
-          secondary: 'Please insert an address or document.', 
-          visible: true
-        }
-        )
-        setTimeout(() => { setMessage({visible: false}) }, 5000)
+        setMessage("noUserInput")
+        setTimeout(() => { setMessage('invisible') }, 5000)
       }
           
     console.log("certificatesArray: ", certificates)
@@ -309,16 +272,22 @@ export default function Home() {
     setLoading(null)
     setUserInput(null)
   }
-
+  
+  // at startup calls for a (read only) provider and sets a background image. 
   useEffect(() => {
     getProvider();
     document.body.style.backgroundImage = `url(${bg.src})`; // `url(${background2})`;
   }, []);
 
+  // everytime tab is changed, resets certificate list and userinput. 
   useEffect(() => {
     setCertificatesArray(null)
     setUserInput(null)
   }, [tab]); 
+
+/*
+Here the actual (one page) app is rendered.
+*/
 
   return (
       <div > 
@@ -326,22 +295,22 @@ export default function Home() {
           tab, setTab,
           loading, setLoading, 
           userInput, setUserInput, 
-          walletAddress, 
-          message, setMessage }}> 
-        <NavBar connectWallet = {connectWallet} /> 
-        {/* () => connectWallet() */}
+          walletAddress, message }}> 
+        <NavBar getSigner = {getSigner} /> 
         <Messages /> 
         <FrontPage />
-        <InputUpload certify = {certify} /> 
+        <IssueCertificate certify = {certify} /> 
         { tab == 'DocHash_Certs'||
           tab == 'Issued_Certs'||
           tab == 'Received_Certs' ? 
             <Container>
               <Grid padded>
                 <Grid.Column width = '8' > 
-                  <InputCheck handleSubmit = {handleSubmit} /> 
+                  <CheckCertificates handleSubmit = {handleSubmit} /> 
                 </Grid.Column> 
                 <Grid.Column width = '8'> 
+                {/* Note that the certificates are rendered on this top level. 
+                This allows for easy rendering of specific certificates.  */}
                 <Card.Group 
                       style={{
                         marginTop: '.5em',
@@ -365,7 +334,7 @@ export default function Home() {
         </UserContext.Provider>
         </div>
       )
-  } 
+} 
 
 // References: 
 // https://codesandbox.io/s/j43b10?file=/src/App.js:469-571 // 

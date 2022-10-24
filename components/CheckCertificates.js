@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import { UserContext } from "../components/userContext";
+import { UserContext } from "./userContext";
 import { Container, Button, Icon, Segment, Form, Input } from "semantic-ui-react"; 
 import { utils } from "ethers"; 
 
 let fileInput; 
 
-const InputCheck = ({ handleSubmit }) => {
+const CheckCertificates = ({ handleSubmit }) => {
 
   const { setUserInput, tab, userInput, loading } = useContext(UserContext);
 
@@ -109,4 +109,4 @@ const InputCheck = ({ handleSubmit }) => {
       }
 }
 
-export default InputCheck
+export default CheckCertificates

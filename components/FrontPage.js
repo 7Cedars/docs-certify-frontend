@@ -1,4 +1,4 @@
-import { Component, useContext } from "react";
+import { useContext } from "react";
 import { UserContext } from "./userContext";
 import { Container, Header, Button, Segment, Grid } from "semantic-ui-react"; 
 
