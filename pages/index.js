@@ -23,11 +23,12 @@ import 'semantic-ui-css/semantic.min.css';
 
 // importing components. 
 import NavBar  from "../components/navBar";
-import FrontPage from "../components/FrontPage";
-import RenderCertificate from "../components/RenderCertificate"
-import CheckCertificates from "../components/CheckCertificates"
-import IssueCertificate from "../components/IssueCertificate"
 import Messages from "../components/Messages";
+import FrontPage from "../components/FrontPage";
+import AboutPage from "../components/AboutPage";
+import CheckCertificates from "../components/CheckCertificates"
+import RenderCertificate from "../components/RenderCertificate"
+import IssueCertificate from "../components/IssueCertificate"
 
 // Setup
 export default function Home() {
@@ -299,6 +300,7 @@ Here the actual (one page) app is rendered.
         <NavBar getSigner = {getSigner} /> 
         <Messages /> 
         <FrontPage />
+        <AboutPage />
         <IssueCertificate certify = {certify} /> 
         { tab == 'DocHash_Certs'||
           tab == 'Issued_Certs'||

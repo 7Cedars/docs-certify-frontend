@@ -31,91 +31,104 @@ const IssueCertificate = ({ certify }) => {
     if (tab === 'Certify') {
 
         return (
-            <Container textAlign = 'center' >
-            
-              <Grid padded>
-                <Grid.Column width = '8' > 
-                    <Container className="userInputBox"> 
-                        <Segment placeholder 
-                                textAlign = 'center' 
-                             //   disabled = { !walletConnected } 
-                                style={{ 
-                                    marginTop: '.5em',
-                                    fontSize: 'large'
-                                }}>
-                            <Container >
-                            <Icon name='file image outline' size = 'huge' style={{
-                                marginTop: '.5em'
-                                }}>
-                            </Icon>
+            <Container>
+            <Grid padded>
+                <Grid.Column width = '8'> 
+                <Container >
+                    <Segment placeholder textAlign = 'center' style={{
+                        marginTop: '.5em',
+                        }}>                    
+                            <Header as ="h2" content = 'Issue your own certificate of authenticity' /> 
+                            <Container textAlign = 'center'> 
+                                <Icon name='file image outline' size = 'huge' style={{
+                                        marginTop: '.2em', marginBottom: '-.3em'}}>
+                                </Icon>
+                            </Container>
                             <Form >
-                                <Input
-                                    type="file"                 
-                                    single="true"
-                                    onChange={ changeHandler }
-                                />
+                                <Segment textAlign = 'center' style={{ }}>
+                                <Header as ="h4" content = 'Step 1: Select a file' />
+                                    <Container fluid>
+                                        <input  className="custom-file-input"
+                                        type="file"                 
+                                        single="true"
+                                        onChange={ changeHandler }
+                                        style={{marginBottom: '0.5em', fontSize: 'medium' }}
+                                        />
+                                        The document will not be saved in your browser or uploaded to a server.
+                                    </Container>
+                                </Segment>
+                                <Segment  textAlign = 'center' style={{ }}>
+                                    <Header as ="h4" content = 'Step 2: Create Unique Document Identifier' />
+                                    <Button primary loading = { loading == 'loading'  }
+                                        style={{
+                                        marginBottom: '0em',
+                                        textAlign: 'center',
+                                        fontSize: 'medium',
+                                        }}>
+                                        Create Identifier
+                                    </Button>  
+                                </Segment>
                             </Form>
-                            </Container>
-                            <Container style={{
-                                marginTop: '1.5em'
-                                }}>
-                            The document will not leave your computer. 
-                            You browser will create a unique document identifier that is uploaded to the Ethereum blockchain.
-                            </Container>
                         </Segment>
-                    </Container>
+                </Container>
                 </Grid.Column> 
                 <Grid.Column width = '8'> 
-                    <Container className="userInputBox"> 
+                    <Container > 
                         <Segment textAlign = 'left' 
                                 style={{  
-                                fontSize: 'large',
+                                fontSize: 'medium',
                                 marginTop: '.5em'
                             }}>
                             <Form onSubmit = { onSubmit } 
-                                    style={{ fontSize: 'large' }}>
-                                <Header as='h3' style = {{ color: "black" }}> Unique Document Hash </Header>
+                                    style={{ fontSize: 'medium' }}>
                                 { userInput ? 
-                                    <Segment color='green' style={{fontSize: 'large', overflowWrap: 'break-word' }} > 
+                                    <Segment color='green' style={{fontSize: 'medium', overflowWrap: 'break-word' }} > 
                                     { userInput } 
                                     </Segment>
                                     :
-                                    <Segment color='red' style={{fontSize: 'large'}} > 
-                                    Please choose a document to certify. 
+                                    <Segment color='red' style={{fontSize: 'medium', color: "lightGrey"}} > 
+                                    Unique document identifier. 
                                     </Segment>
-                                }                 
-                                <Form.Field  style={{ marginTop: '2em' }}>
-                                <label style={{ color: "black" }} >Recipient Address </label>
-                                <input 
-                                    type='text'
-                                    placeholder='0x00... (optional) ' 
-                                    onChange= { (e) => recipientInput = e.target.value }
-                                    />
-                                </Form.Field>
-                                <Form.Field style={{ marginTop: '2em' }}>
-                                <label style={{ color: "black" }}>Description</label>
-                                <input 
-                                    type='text'
-                                    placeholder='Brief description of document. (optional)' 
-                                    onChange= { (e) => descriptionInput = e.target.value }
-                                    />
-                                </Form.Field>
-                                <Form.Field  style={{ marginTop: '2em' }}>
-                                    <Button fluid primary type='submit'
-                                            loading = { loading != null } 
-                                            disabled = { !userInput } 
-                                            style={{     
-                                            fontSize: 'large'
-                                            }}> 
-                                        Upload certificate to the ethereum blockchain
-                                    </Button>
-                                </Form.Field>
+                                }
+                                <Segment  textAlign = 'center' style={{ }}>
+                                    <Header as ="h4" content = 'Step 3: Add a recipient address (optional)' />         
+                                    <Form.Field  style={{ marginTop: '1em', fontSize: 'medium' }}>
+                                    <input 
+                                        type='text'
+                                        placeholder='Ethereum adress: 0x00...'  
+                                        onChange= { (e) => recipientInput = e.target.value }
+                                        />
+                                    </Form.Field>
+                                </Segment>
+                                <Segment  textAlign = 'center' style={{ }}>
+                                    <Header as ="h4" content = 'Step 4: Add a brief description (optional)' />
+                                    <Form.Field style={{ marginTop: '1em', fontSize: 'medium' }}>
+                                    <input 
+                                        type='text'
+                                        placeholder='Content of document.' 
+                                        onChange= { (e) => descriptionInput = e.target.value }
+                                        />
+                                    </Form.Field>
+                                </Segment>
+                                <Segment  textAlign = 'center' style={{ }}>
+                                    <Header as ="h4" content = 'Step 5: Upload Certificate' />
+                                    <Form.Field  style={{ marginTop: '1em' }}>
+                                        <Button fluid primary type='submit'
+                                                loading = { loading != null } 
+                                                disabled = { !userInput } 
+                                                style={{     
+                                                fontSize: 'medium'
+                                                }}> 
+                                            Upload certificate to the ethereum blockchain
+                                        </Button>
+                                    </Form.Field>
+                                </Segment>
                                 </Form>
                             </Segment>
                         </Container>
                     </Grid.Column> 
                 </Grid>
-            </Container>         
+                </Container> 
         )
     }
   }

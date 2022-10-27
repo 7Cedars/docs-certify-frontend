@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { UserContext } from "./userContext";
-import { Container, Button, Icon, Segment, Form, Input } from "semantic-ui-react"; 
+import { Container, Button, Icon, Segment, Form, Input, Header } from "semantic-ui-react"; 
 import { utils } from "ethers"; 
 
 let fileInput; 
@@ -29,82 +29,104 @@ const CheckCertificates = ({ handleSubmit }) => {
         tab == 'Received_Certs') {
 
         return (
-            <Container className="userInputBox">
+            <Container >
                 <Segment placeholder textAlign = 'center' style={{
-                    marginBottom: '5em',
+                    marginBottom: '3em',
                     marginTop: '.5em',
-                    fontSize: 'large'
                     }}>
-                        <Container >
-                        <Icon name='user outline' size = 'huge' style={{
-                            marginTop: '.5em', marginBottom: '.5em' 
-                            }}>
-                        </Icon>
-                        <Form onSubmit = { handleSubmit }>
-                            <Form.Input 
-                            label=
-                                {tab == 'Issued_Certs' ? 
-                                'Check issued certificates by address' : 
-                                'Check received certificates by address'                    
-                                }
-                            control={ Input }
-                            placeholder='Ethereum adress: 0x00...' 
-                            onChange = {(e) => setUserInput(e.target.value)} 
-                            >
-                            </Form.Input>
-                        <Button primary loading = { loading == 'loading' }
-                            style={{
-                            marginBottom: '2em',
-                            marginTop: '1em',
-                            textAlign: 'center',
-                            fontSize: 'large',
-                            }}>
-                            Check Address
-                        </Button>  
-                        </Form>                
+                        
+                        <Header as ="h2"> 
+                        { tab == 'Issued_Certs' ? 
+                          'What certificates did an Ethereum address issue?' : 
+                          'What certificates did an Ethereum address receive?'                
+                        }
+                        </Header>
+                        <Container textAlign = 'center'> 
+                          <Icon name='user outline' size = 'huge' style={{
+                                marginTop: '.2em', marginBottom: '.5em'
+                                }}>
+                          </Icon>
                         </Container>
-
-                    </Segment>
-            </Container>       
+                        <Form onSubmit = { handleSubmit } >                                     
+                          <Segment textAlign = 'center' style={{ }}>
+                          <Header as ="h4" content = 'Step 1: Provide an Ethereum address' />
+                          <input 
+                              type='text'
+                              placeholder='Ethereum adress: 0x00...' 
+                              onChange = {(e) => setUserInput(e.target.value)} 
+                              />
+                          </Segment>
+                          <Segment  textAlign = 'center' style={{ }}>
+                          <Header as ="h4" content = 'Step 2: Submit address' />
+                            <Button fluid primary loading = { loading == 'loading' }
+                            style={{
+                              marginBottom: '.5em',
+                              marginTop: '1em',
+                              textAlign: 'center',
+                              fontSize: 'medium',
+                            }}>
+                            Submit Address
+                            </Button> 
+                          </Segment>
+                          <Segment  textAlign = 'center' style={{ }}>
+                            <Header as ="h4" content = 'Step 3: Check the resulting certificate(s).' />
+                            <Icon name='arrow circle right' color = 'blue' size = 'big' >
+                          </Icon>
+                          </Segment>
+                        </Form>
+                  </Segment>
+            </Container>
         ) 
     }
 
     if (tab == 'DocHash_Certs') {
 
         return (
-          <Container className="userInputBox">
-          <Segment placeholder textAlign = 'center' style={{
-              marginBottom: '5em',
-              marginTop: '.5em',
-              fontSize: 'large'
-              }}> 
-                  <Container >
-                    <Icon name='file image outline' size = 'huge' style={{
-                      marginTop: '.5em', marginBottom: '0em' 
-                      }}>
-                    </Icon>
-                    <Form onSubmit = { handleSubmit } > 
-                        <input
-                          type="file"                    
-                          single="true"
-                          onChange={ changeHandler }
-                        />
-                      <Button primary loading = { loading == 'loading'  }
-                          style={{
-                          marginBottom: '2em',
-                          marginTop: '1em',
-                          textAlign: 'center',
-                          fontSize: 'large',
-                          marginTop: '2em',
-                          }}>
-                          Check Document
-                      </Button>  
-                    </Form>
-                    The document will not leave your computer. 
-                    You browser will create a unique document identifier that is uploaded to the Ethereum blockchain.
-                </Container>
-          </Segment>
-        </Container> 
+          <Container >
+                <Segment placeholder textAlign = 'center' style={{
+                    marginBottom: '3em',
+                    marginTop: '.5em',
+                    }}>
+                        <Header as ="h2" content = 'Has a document been certified as authentic?' /> 
+                        <Container textAlign = 'center'> 
+                          <Icon name='file image outline' size = 'huge' style={{
+                                marginTop: '.2em', marginBottom: '-.2em'
+                                }}>
+                          </Icon>
+                        </Container>
+                        <Form onSubmit = { handleSubmit }>
+                          <Segment textAlign = 'center' style={{ }}>
+                          <Header as ="h4" content = 'Step 1: Select a file' />
+                            <Container fluid>
+                                <input  className="custom-file-input"
+                                  type="file"                 
+                                  single="true"
+                                  onChange={ changeHandler }
+                                  style={{marginBottom: '0.5em' }}
+                                />
+                              The document will not be saved in your browser or uploaded to a server.
+                            </Container>
+                          </Segment>
+                          <Segment  textAlign = 'center' style={{ }}>
+                            <Header as ="h4" content = 'Step 2: Submit Document' />
+                            <Button primary loading = { loading == 'loading'  }
+                              style={{
+                                marginBottom: '.5em',
+                                marginTop: '.0em',
+                                textAlign: 'center',
+                                fontSize: 'medium',
+                                }}>
+                                Submit Document
+                            </Button>  
+                          </Segment>
+                          <Segment  textAlign = 'center' style={{ }}>
+                            <Header as ="h4" content = 'Step 3: Check the resulting certificate(s).' />
+                            <Icon name='arrow circle right' color = 'blue' size = 'big' >
+                          </Icon>
+                          </Segment>
+                        </Form>
+                  </Segment>
+            </Container>
         ) 
       }
 }
