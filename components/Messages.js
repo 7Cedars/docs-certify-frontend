@@ -19,7 +19,6 @@ const Messages = () => {
         content = { color: 'green',
                     primary: '...', 
                     secondary: '...',
-                    error: '...',
                     visible: false
                 }
     }
@@ -39,6 +38,15 @@ const Messages = () => {
         content = { color: 'red',
                     primary: 'Change the network to Goerli.',
                     secondary: 'This app needs MetaMask to be installed.',
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
+    }
+
+    if (message === "warningTestApp") {
+        content = { color: 'red',
+                    primary: 'Warning: this is a test dapp.',
+                    secondary: 'It only runs on the Goerli test network.',
                     visible: true
                 }
                 setTimeout(() => { setMessage('invisible') }, 5000)
@@ -83,6 +91,15 @@ const Messages = () => {
         content = { color: 'red',
                     primary: 'No user input provided', 
                     secondary: 'Please insert an address or document.', 
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
+    }
+
+    if (message === "invalidUserInput") {
+        content = { color: 'red',
+                    primary: 'Invaled user input provided', 
+                    secondary: 'Please insert a valid address or document.', 
                     visible: true
                 }
                 setTimeout(() => { setMessage('invisible') }, 5000)

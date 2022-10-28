@@ -253,7 +253,7 @@ The following are functions to interact with ethereum contract.
         )}
 
       } catch (err) {
-        setMessage(err)
+        setMessage("invalidUserInput")
       }
     
     setCertificatesArray(certificates)
@@ -261,23 +261,24 @@ The following are functions to interact with ethereum contract.
     setUserInput('')
   }
   
-  // at startup calls for a (read only) provider and sets a background image. 
-  useEffect(() => {
-    getProvider();
-    document.body.style.backgroundImage = `url(${bg.src})`; // `url(${background2})`;
-  }, []);
-
   // everytime tab is changed, resets certificate list and userinput. 
   useEffect(() => {
     setCertificatesArray(null)
     setUserInput('')
-    setMessage('invisible') 
+   // setMessage('invisible') 
   }, [tab]); 
 
   // when certificates are listed, user input is reset.
   useEffect(() => {
     setUserInput('')
   }, [certificatesArray]); 
+
+  // at startup calls for a (read only) provider and sets a background image. 
+  useEffect(() => {
+    getProvider();
+    setMessage('warningTestApp');
+    document.body.style.backgroundImage = `url(${bg.src})`; // `url(${background2})`;
+  }, []);
 
 /*
 Here the actual (one page) app is rendered.

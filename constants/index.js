@@ -300,4 +300,4 @@ export const abi = [
     "type": "function"
   }
 ]
-export const CONTRACT_ADDRESS = "0xe91aD913604ca1bEff0189424445D590152fC023"
+export const CONTRACT_ADDRESS = "0xB4AfD5AA80a7D8e01BF3e7F3C8E3917a1De3790f"

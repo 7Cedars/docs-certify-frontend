@@ -14,7 +14,6 @@ import { utils } from "ethers";
 let recipientInput = '0x0000000000000000000000000000000000000000'; 
 let descriptionInput = ' '; 
 
-
 const IssueCertificate = ({ certify }) => {
 
     const { tab, loading, userInput, setUserInput, setMessage } = useContext( UserContext );
@@ -137,7 +136,7 @@ const IssueCertificate = ({ certify }) => {
                         </Container>
                     </Grid.Column> 
                 </Grid>
-                </Container> 
+            </Container> 
         )
     }
   }

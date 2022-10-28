@@ -45,11 +45,9 @@ const FrontPage = () => {
             />
                 <Button primary 
                 size='huge' 
-                onClick={() => setTab('DocHash_Certs')}
-                style={{ 
-                    marginTop: '3rem'
-                    }}>
-                Check Authenticity
+                onClick={() => setTab('About')}
+                style={{ marginTop: '3.1rem' }}>
+                Find out more 
                 </Button>
             </Segment>
         </Container>
@@ -80,18 +78,17 @@ const FrontPage = () => {
                 overflowY: 'scroll',
                 marginTop: '1.4em',
                 color: "white"
-                }}
-            > 
+                }}> 
                 Certify.doc provides certificates of authenticity that are immutable, non-tradable and revokable. 
                 <br/>
                 <br/>
-                It relates the social authority behind an ethereum address to an offline digital document when certifying authenticity.
+                Anoyone can check the authenticy of a document by uploading it in this dapp. 
                 </Header>
                 <Button primary 
-                size='huge' 
-                onClick={() => setTab('About')}
-                style={{ marginTop: '0.78rem' }}>
-                Find out more 
+                        size='huge' 
+                        onClick={() => setTab('DocHash_Certs')}
+                        style={{ marginTop: '.9rem' }}>
+                        Check Authenticity
                 </Button>
             </Segment>
         </Container>
