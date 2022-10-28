@@ -18,7 +18,7 @@ const AboutPage = () => {
                     }}>
                 <Header
                     as='h1'
-                    content='Certiy.xyz: social authority on the blockchain' 
+                    content='Certify.doc: social authority on the blockchain' 
                     style={{
                     fontWeight: 'normal',
                     marginBottom: 0,
@@ -35,25 +35,29 @@ const AboutPage = () => {
                     color: "white"
                     }}
                 > 
-                    Certify.doc provides certificates of authenticity that are immutable, non-tradable and revokable. 
-                    <li> The issuer of a certificate vouches for the authenticity of an offline document.</li> 
-                    <li> Recipients can be related to a certificate of authenticity.</li> 
-                    <li> Certificates cannot be traded, but can be revoked by both the issuer and recipient. </li> 
+                    Certify.doc provides a single utility: It issues a record on the ethereum blockchain that relates two addresses (an issuer and recipient) to an offline document. 
+                    These records are immutable, non-tradable and revokable. They are similar to non-fungible tokens (NFTs) but have a a few important differences.
                     <br/>
-                    Certificates that can be used by 
+                    <br/>
+                    Certificates of authenticity
+                    <li> cannot be traded or exchanged. They can only revoked.</li>
+                    <li> are accessed by uploading the original document.</li>
+                    <br/>
+                    It means that
+                    <li> a person or organisation can issue a certificate to vouch for the authenticity of a document and credibility of another person or organisation.</li>
+                    <li> certificates are readily accesible to those that are not familiar with blockchain technology.</li>
+                    <br/>
+                    Certificates can be used by 
                     <li> Educators to certify the authenticity of their degrees.</li> 
                     <li> Employers to certify authenticy of employer's statements.</li> 
                     <li> Individuals to authenticate wills and estates. </li> 
                     <br/>
-                    Certify.doc relates the social authority behind an ethereum address to a digital document, 
+                    In brief, certify.doc relates the social authority behind an ethereum address to a digital document, 
                     and expresses a relationship between two social actors.
                     <br/>
                     <br/>
-                    All of this, built on the Ethereum blockchain. 
-                    <br/>
-                    <br/>
                     {/* Still need to include links here. */}
-                    Check out the whitepaper and github repository.  
+                    Check out the github repository for the solidity backend and react frontend.  
                     </Header>
                 </Segment>
             </Container>

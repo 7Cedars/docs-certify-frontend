@@ -1,8 +1,20 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is the **frontend** of a simple dapp project: certify.doc. The github repository for the backend can be found [here]().
+
+The dapp provides a single utility. It issues records on the blockchain that relate two ethereum addresses (an issuer and recipient address) to the hash of a digital offline document. 
+They are somewhat similar to non-fungible tokens (NFTs).
+
+But in contrast to NFTs 
+- These records cannot be traded or exchanged. They can only revoked. 
+- These records can be easily accessed by uploading the original document. 
+
+Because these records immutable, non-tradable and revokable, they can be used by one party (the issuer) to vouch for the authenticity of the document and, at the same time, the credibility of a second party (the recipient). 
+
+Because these records are related to an offline document that can be send via email, social media or any other traditional method, it is extremely accesible to those that are not familiar with blockchain technology. 
 
 ## Getting Started
+To view and use the deployed dapp, please visit its deployed instance on vercel: [http://localhost:3000](http://localhost:3000). Please note that the dapp only runs on the Goerli Ethereum test network. 
 
-First, run the development server:
+To run the app locally, clone the files, install all dependencies and run the development server:
 
 ```bash
 npm run dev
@@ -12,23 +24,22 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Notes on Development
+This dapp is under active development and does not come with any guarantees what so ever. It can - and will - break at any time. 
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+I used this app as an educational project while learning solidity and javascript (react/next). I wrote in less than two weeks after two months of starting my studies. 
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## To Dos 
+### Current Dapp (v0.1) 
+- Improve error messaging to users. 
+- Improve interaction with alchemy APIs. 
+- Implement recognition of ENS addresses. 
+- Implement preview for images and (possibly) PDFs.   
+- Implement reading of Eth contract emitted event. 
+- Implement reading of owner of document. 
+- Fixing bugs. Many bugs. 
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Future Dapp (v0.2) 
+- Implement optional upload of files to IPFS. 
+- The contract will be upgradable, the frontend should adapt accordingly. 
+- Possibly integrate the Graph into dapp and frontend. 

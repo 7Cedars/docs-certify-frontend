@@ -20,8 +20,8 @@ const CheckCertificates = ({ handleSubmit }) => {
     fileReader.onload = function () {
     result = fileReader.result; 
     // NB: Here the hashing is done! // 
-    setUserInput(utils.keccak256( utils.toUtf8Bytes(result) )); // 0x12, 0x34sha256 // sha256(result).toString()
     // console.log(utils.keccak256( utils.toUtf8Bytes(result))) 
+    setUserInput(utils.keccak256( utils.toUtf8Bytes(result) )); // 0x12, 0x34sha256 // sha256(result).toString()
     }
   }
 

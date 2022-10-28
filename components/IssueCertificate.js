@@ -56,18 +56,7 @@ const IssueCertificate = ({ certify }) => {
                                         />
                                         The document will not be saved in your browser or uploaded to a server.
                                     </Container>
-                                </Segment>
-                                <Segment  textAlign = 'center' style={{ }}>
-                                    <Header as ="h4" content = 'Step 2: Create Unique Document Identifier' />
-                                    <Button primary loading = { loading == 'loading'  }
-                                        style={{
-                                        marginBottom: '0em',
-                                        textAlign: 'center',
-                                        fontSize: 'medium',
-                                        }}>
-                                        Create Identifier
-                                    </Button>  
-                                </Segment>
+                                </Segment> 
                             </Form>
                         </Segment>
                 </Container>
@@ -81,7 +70,9 @@ const IssueCertificate = ({ certify }) => {
                             }}>
                             <Form onSubmit = { onSubmit } 
                                     style={{ fontSize: 'medium' }}>
-                                { userInput ? 
+                                <Segment textAlign = 'center' style={{ }}>
+                                <Header as ="h4" content = 'Step 2: Create Unique Document Identifier (automatic)' />
+                                    { userInput ? 
                                     <Segment color='green' style={{fontSize: 'medium', overflowWrap: 'break-word' }} > 
                                     { userInput } 
                                     </Segment>
@@ -89,7 +80,8 @@ const IssueCertificate = ({ certify }) => {
                                     <Segment color='red' style={{fontSize: 'medium', color: "lightGrey"}} > 
                                     Unique document identifier. 
                                     </Segment>
-                                }
+                                    }
+                                </Segment>
                                 <Segment  textAlign = 'center' style={{ }}>
                                     <Header as ="h4" content = 'Step 3: Add a recipient address (optional)' />         
                                     <Form.Field  style={{ marginTop: '1em', fontSize: 'medium' }}>

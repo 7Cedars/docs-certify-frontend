@@ -4,6 +4,7 @@ Important functional characteristics of the dapp:
 Users can use the app - in read-only mode - without having an ethereum wallet installed. 
 If they wish to issue a certificate, they are introduced to MetaMask, 
 Including a link and explanation. 
+It does not use all functionalities of the solidity contract yet. 
 
 please note:
 I built the app while learning solidity and js. It is an personal educational project.  
@@ -39,7 +40,7 @@ export default function Home() {
   // keeps track if app is loading (most often waiting for blockchain interaction) 
   const [loading, setLoading] = useState();
   // keeps track of meesaging to users. Both error and success messages.  
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState('invisible');
   // keeps track if a wallet has been connected to the app, and if so - what address.  
   const [walletAddress, setWalletAddress] = useState(null);
   // array to store user input. 
@@ -114,7 +115,6 @@ The following are functions to interact with ethereum contract.
 
       await tx.wait();
       setMessage("uploadSuccessful")
-      setTimeout(() => { setMessage('invisible') }, 5000)
 
     } catch (err) { 
       console.error(err.message);
@@ -130,7 +130,7 @@ The following are functions to interact with ethereum contract.
       const provider = await getProvider();
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider); 
       const certificateIndex = await dcContract.checkDocHash(userInput);
-      return certificateIndex[0]
+      return certificateIndex
 
     } catch (err) {
       console.error(err.message);
@@ -169,6 +169,8 @@ The following are functions to interact with ethereum contract.
   // Takes an array of indexes, and calls each certificate. No signer required.
   const callCertificate = async (index) => {
 
+    console.log("at callCertificate: ", index)
+
     try {
       const provider = await getProvider();
       const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
@@ -180,12 +182,10 @@ The following are functions to interact with ethereum contract.
       const certificate = {
         id: index,
         docHash: data[0],
-        issuer: `Issuer: ${data[1]}`,
-        recipient: data[2] === '0x0000000000000000000000000000000000000000' ? 
-          `Recipient: N/A` : `Recipient: ${data[2]}`,
-        description: (parseInt(data[3]) === '') ? 
-          `Description: N/A` : `Description: ${data[3]}`,
-        dateTime: `Certicate issued on: ${new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(dateTimeObj)}`
+        issuer: data[1],
+        recipient: data[2],
+        description: data[3],
+        dateTime: new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(dateTimeObj)
       }
 
       return (certificate)
@@ -212,7 +212,6 @@ The following are functions to interact with ethereum contract.
     }
     setMessage("revokeSuccessful")
     setLoading(null)
-    setTimeout(() => { setMessage('') }, 5000)
   }
 
   // Passes user input to the requested (read only) function, based on the selected tab. 
@@ -244,34 +243,21 @@ The following are functions to interact with ethereum contract.
     try { 
       if (data.length === 0) {
         certificates.push(
-          {
-            id: 0,
-            issuer: ` `,
-            recipient: ` `,
-            description: ['If you did expect a certificate, a few things might have happened:', <br/>,
-                          '1) The address has been mispelled or the uploaded document is not the original.', <br/>,
-                          '2) The certificate was not succesfully uploaded.', <br/>,
-                          '3) The certificate was revoked.', <br/>,  
-                          '4) There is a bug in the application.', <br/>],
-            dateTime: `No certificates found`
-          }
-        )
-      }
+          { id: 0 }
+        )}
 
         for (let i = 0; i < data.length; i++) {
           certificates.push(
-            await callCertificate( parseInt(data[i]) - 1)
-            ); 
-        }
+            await callCertificate( parseInt(data[i]) )
+        )}
+
       } catch (err) {
-        setMessage("noUserInput")
-        setTimeout(() => { setMessage('invisible') }, 5000)
+        setMessage(err)
       }
-          
-    console.log("certificatesArray: ", certificates)
+    
     setCertificatesArray(certificates)
     setLoading(null)
-    setUserInput(null)
+    setUserInput('')
   }
   
   // at startup calls for a (read only) provider and sets a background image. 
@@ -283,8 +269,14 @@ The following are functions to interact with ethereum contract.
   // everytime tab is changed, resets certificate list and userinput. 
   useEffect(() => {
     setCertificatesArray(null)
-    setUserInput(null)
+    setUserInput('')
+    setMessage('invisible') 
   }, [tab]); 
+
+  // when certificates are listed, user input is reset.
+  useEffect(() => {
+    setUserInput('')
+  }, [certificatesArray]); 
 
 /*
 Here the actual (one page) app is rendered.
@@ -295,8 +287,9 @@ Here the actual (one page) app is rendered.
         <UserContext.Provider value={{ 
           tab, setTab,
           loading, setLoading, 
-          userInput, setUserInput, 
-          walletAddress, message }}> 
+          userInput, setUserInput,
+          message, setMessage,
+          walletAddress }}> 
         <NavBar getSigner = {getSigner} /> 
         <Messages /> 
         <FrontPage />
@@ -315,7 +308,7 @@ Here the actual (one page) app is rendered.
                 This allows for easy rendering of specific certificates.  */}
                 <Card.Group 
                       style={{
-                        marginTop: '.5em',
+                        marginTop: '.1em',
                       }} > 
                       { certificatesArray ?
                            certificatesArray.map(

@@ -4,38 +4,53 @@ import { Container, Header, Segment } from "semantic-ui-react";
 
 const Messages = () => {
 
-    const { message } = useContext(UserContext);
+    const { message, setMessage } = useContext(UserContext);
 
     console.log("message is: ", message)
 
-    let content = {}
+    let content = { }
+
+    if (message.length > 20) {
+        content = { color: 'red',
+                    error: message,
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
+    }
 
     if (message === "invisible") {
         content = { color: 'green',
                     primary: '...', 
                     secondary: '...',
-                    visible: false}
+                    error: '...',
+                    visible: false
+                }
     }
 
     if (message === "wrongNetwork") {
         content = { color: 'red',
                     primary: 'Change the network to Goerli.',
                     secondary: 'This app needs MetaMask to be installed.',
-                    visible: true}
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
     }
 
     if (message === "uploadInProgress") {
         content = { color: 'blue',
                     primary: 'Currently uploading certificate to the blockchain.',
                     secondary: 'This can take a few minutes.',
-                    visible: true}
+                    visible: true
+                }
     }
 
     if (message === "uploadSuccessful") {
         content = { color: 'green',
                     primary: 'Upload succesfull',
                     secondary: 'Your certificate has been succesfully uploaded to the Ethereum blockchain',
-                    visible: true}
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
     }
 
     if (message === "revokeInProgress") {
@@ -44,20 +59,25 @@ const Messages = () => {
                     secondary: 'This can take a few minutes.',
                     visible: true
                 }
+                setTimeout(() => { setMessage('invisible') }, 5000)
     }
 
     if (message === "revokeSuccessful") {
         content = { color: 'green',
                     primary: 'Revoke succesfull.',
                     secondary: 'Your certificate has been succesfully revoked.',
-                    visible: true}
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
     }
 
     if (message === "noUserInput") {
         content = { color: 'red',
                     primary: 'No user input provided', 
                     secondary: 'Please insert an address or document.', 
-                    visible: true}
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
     }
     
     return (
