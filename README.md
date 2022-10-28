@@ -1,4 +1,4 @@
-This is the **frontend** of a simple dapp project: certify.doc. The github repository for the backend can be found [here]().
+This is the **frontend** of a simple dapp project: certify.doc. The github repository for the backend can be found [here](https://github.com/7Cedars/docs-certify-backend.git).
 
 The dapp provides a single utility. It issues records on the blockchain that relate two ethereum addresses (an issuer and recipient address) to the hash of a digital offline document. 
 They are somewhat similar to non-fungible tokens (NFTs).
@@ -27,7 +27,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Notes on Development
 This dapp is under active development and does not come with any guarantees what so ever. It can - and will - break at any time. 
 
-I used this app as an educational project while learning solidity and javascript (react/next). I wrote in less than two weeks after two months of starting my studies. 
+I used this app as an educational project while learning solidity and javascript (react/next).
 
 ## To Dos 
 ### Current Dapp (v0.1) 

@@ -22,7 +22,7 @@ const AboutPage = () => {
                     }}>
                 <Header
                     as='h1'
-                    content='Certify.doc: social authority on the blockchain' 
+                    content="Certify.doc: social authority on the blockchain" 
                     style={{
                     fontWeight: 'normal',
                     marginBottom: 0,
