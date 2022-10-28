@@ -12,7 +12,7 @@ Because these records immutable, non-tradable and revokable, they can be used by
 Because these records are related to an offline document that can be send via email, social media or any other traditional method, it is extremely accesible to those that are not familiar with blockchain technology. 
 
 ## Getting Started
-To view and use the deployed dapp, please visit its deployed instance on vercel: [http://localhost:3000](http://localhost:3000). Please note that the dapp only runs on the Goerli Ethereum test network. 
+To view and use the deployed dapp, please visit its deployed instance on vercel: [https://docs-certify-frontend-9iop.vercel.app/](https://docs-certify-frontend-9iop.vercel.app/). Please note that the dapp only runs on the Goerli Ethereum test network. 
 
 To run the app locally, clone the files, install all dependencies and run the development server:
 

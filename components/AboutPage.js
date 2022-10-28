@@ -61,7 +61,7 @@ const AboutPage = () => {
                     <br/>
                     <br/>
                     {/* Still need to include links here. */}
-                    Check out the github repository for the solidity backend and react frontend.  
+                    Check out the github repository for the react frontend and solidity backend.  
                     </Header>
                 </Segment>
             </Container>
