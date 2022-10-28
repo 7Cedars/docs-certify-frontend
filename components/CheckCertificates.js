@@ -1,3 +1,8 @@
+/*
+This file creates the component to check for certificates by document, issuer address or recipient address. 
+In each case the object userInput is updated that triggers the relevant calls in index.js to the contract.    
+*/
+
 import React, { useContext } from "react";
 import { UserContext } from "./userContext";
 import { Container, Button, Icon, Segment, Form, Input, Header } from "semantic-ui-react"; 
@@ -5,10 +10,12 @@ import { utils } from "ethers";
 
 let fileInput; 
 
+ 
 const CheckCertificates = ({ handleSubmit }) => {
 
-  const { setUserInput, tab, userInput, loading } = useContext(UserContext);
-
+  const { setUserInput, tab, loading } = useContext(UserContext);
+  
+  // Takes an uploaded document, creates a hash using keccak256 and sets it as userinput. 
   const changeHandler = async (e) => {
 
     fileInput = e.target.files[0]; 
@@ -19,12 +26,12 @@ const CheckCertificates = ({ handleSubmit }) => {
     fileReader.readAsDataURL(fileInput);
     fileReader.onload = function () {
     result = fileReader.result; 
-    // NB: Here the hashing is done! // 
-    // console.log(utils.keccak256( utils.toUtf8Bytes(result))) 
-    setUserInput(utils.keccak256( utils.toUtf8Bytes(result) )); // 0x12, 0x34sha256 // sha256(result).toString()
+    // NB: Hashing algorithm:  
+    setUserInput(utils.keccak256( utils.toUtf8Bytes(result) )); 
     }
   }
 
+    // These are input comoponents that take an address - either issuer or recipient according to selected tab.   
     if (tab == 'Issued_Certs' || 
         tab == 'Received_Certs') {
 
@@ -79,6 +86,7 @@ const CheckCertificates = ({ handleSubmit }) => {
         ) 
     }
 
+    // These is input comoponent that takes a file - this can be anyfile.    
     if (tab == 'DocHash_Certs') {
 
         return (
@@ -101,7 +109,8 @@ const CheckCertificates = ({ handleSubmit }) => {
                                 <input  className="custom-file-input"
                                   type="file"                 
                                   single="true"
-                                  onChange={ changeHandler }
+                                  // as file cannot be set as userinput directly, a change handler (see above) is called first. 
+                                  onChange={ changeHandler } 
                                   style={{marginBottom: '0.5em' }}
                                 />
                               The document will not be saved in your browser or uploaded to a server.

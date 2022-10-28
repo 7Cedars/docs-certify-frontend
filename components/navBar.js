@@ -1,3 +1,8 @@
+/* 
+This components creates the Navbar on top of the app. 
+It also handles selection of tabs and calls the wallet connect function. 
+*/ 
+
 import React, { useContext } from "react";
 import { UserContext } from "./userContext";
 import { Button, Grid, Icon, Menu, Segment } from "semantic-ui-react";

@@ -1,3 +1,10 @@
+/* 
+This component handles uploading of a document. 
+It takes a document, input of recipient address and description.  
+It directly calls the function certify at index.js that is the handler for calling issueCertificate at the blockchain contract. 
+*/
+
+// Setup 
 import { Container, Header, Button, Icon, Segment, Form, Grid, Input } from "semantic-ui-react"; 
 import { UserContext} from "./userContext";
 import { useContext } from "react";
@@ -7,10 +14,12 @@ import { utils } from "ethers";
 let recipientInput = '0x0000000000000000000000000000000000000000'; 
 let descriptionInput = ' '; 
 
+
 const IssueCertificate = ({ certify }) => {
 
     const { tab, loading, userInput, setUserInput, setMessage } = useContext( UserContext );
 
+    // Change handler to create a hash of the uploaded document. 
     const changeHandler = async (e) => {
         let fileInput = e.target.files[0]; 
         let fileReader = false;
@@ -24,10 +33,12 @@ const IssueCertificate = ({ certify }) => {
         }
     }
 
+    // onSubmit handler: Calling the certify function at index.js.  
     const onSubmit = async (e) => {    
         certify([userInput, recipientInput, descriptionInput])
       };
-
+    
+    // rendering the certify page. 
     if (tab === 'Certify') {
 
         return (
@@ -37,7 +48,8 @@ const IssueCertificate = ({ certify }) => {
                 <Container >
                     <Segment placeholder textAlign = 'center' style={{
                         marginTop: '.5em',
-                        }}>                    
+                        }}>            
+                            {/* Segment for uploading document to be certified */}        
                             <Header as ="h2" content = 'Issue your own certificate of authenticity' /> 
                             <Container textAlign = 'center'> 
                                 <Icon name='file image outline' size = 'huge' style={{
@@ -51,7 +63,8 @@ const IssueCertificate = ({ certify }) => {
                                         <input  className="custom-file-input"
                                         type="file"                 
                                         single="true"
-                                        onChange={ changeHandler }
+                                        // the changeHandler (see above) hashes the uploaded document. 
+                                        onChange={ changeHandler } 
                                         style={{marginBottom: '0.5em', fontSize: 'medium' }}
                                         />
                                         The document will not be saved in your browser or uploaded to a server.
@@ -71,6 +84,7 @@ const IssueCertificate = ({ certify }) => {
                             <Form onSubmit = { onSubmit } 
                                     style={{ fontSize: 'medium' }}>
                                 <Segment textAlign = 'center' style={{ }}>
+                                {/* The document hash (after it is created) is shown in the app. It is NOT a secret address. Just needs to be unique. */}
                                 <Header as ="h4" content = 'Step 2: Create Unique Document Identifier (automatic)' />
                                     { userInput ? 
                                     <Segment color='green' style={{fontSize: 'medium', overflowWrap: 'break-word' }} > 
@@ -82,6 +96,7 @@ const IssueCertificate = ({ certify }) => {
                                     </Segment>
                                     }
                                 </Segment>
+                                {/* Input recipient address */}
                                 <Segment  textAlign = 'center' style={{ }}>
                                     <Header as ="h4" content = 'Step 3: Add a recipient address (optional)' />         
                                     <Form.Field  style={{ marginTop: '1em', fontSize: 'medium' }}>
@@ -92,6 +107,7 @@ const IssueCertificate = ({ certify }) => {
                                         />
                                     </Form.Field>
                                 </Segment>
+                                {/* Input description */}
                                 <Segment  textAlign = 'center' style={{ }}>
                                     <Header as ="h4" content = 'Step 4: Add a brief description (optional)' />
                                     <Form.Field style={{ marginTop: '1em', fontSize: 'medium' }}>
@@ -102,6 +118,7 @@ const IssueCertificate = ({ certify }) => {
                                         />
                                     </Form.Field>
                                 </Segment>
+                                {/* Submit button */}
                                 <Segment  textAlign = 'center' style={{ }}>
                                     <Header as ="h4" content = 'Step 5: Upload Certificate' />
                                     <Form.Field  style={{ marginTop: '1em' }}>

@@ -1,3 +1,9 @@
+/* 
+For now, this is a completely static page. 
+I seperated it in a left and right side, that are combined at the end. 
+Main reaosn to do so is that I might want to implement some more fancy transitions down the line.  
+*/
+
 import { useContext } from "react";
 import { UserContext } from "./userContext";
 import { Container, Header, Button, Segment, Grid, Transition } from "semantic-ui-react"; 
@@ -7,8 +13,6 @@ const FrontPage = () => {
     const { tab, setTab } = useContext(UserContext);
     const visible = false;
     
-    
-
     const leftSidePage = (       
         <Container className="userInputBox"  >
             <Segment basic textAlign = 'right' style={{
@@ -81,7 +85,7 @@ const FrontPage = () => {
                 Certify.doc provides certificates of authenticity that are immutable, non-tradable and revokable. 
                 <br/>
                 <br/>
-                Anyone can check certificates, their issuers and recipients. 
+                It relates the social authority behind an ethereum address to an offline digital document when certifying authenticity.
                 </Header>
                 <Button primary 
                 size='huge' 

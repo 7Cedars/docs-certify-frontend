@@ -1,6 +1,10 @@
+/* 
+This is an entirely static page, that provides background information on the Dapp. 
+*/ 
+
 import { useContext } from "react";
 import { UserContext } from "./userContext";
-import { Container, Header, Button, Segment, Grid, Sticky } from "semantic-ui-react"; 
+import { Container, Header, Segment } from "semantic-ui-react"; 
 
 const AboutPage = () => {
     

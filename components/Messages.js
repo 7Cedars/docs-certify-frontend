@@ -1,3 +1,10 @@
+/*
+This component handles messaging to the user. Either negative, neutral or positive. 
+In any component the setMessage function can be called, that ten results in a message on top of the app. 
+There are a number of preset messages, but direct parsing of error message is also possible.
+It is not entirely bug free yet.. 
+*/ 
+
 import { useContext } from "react";
 import { UserContext } from "./userContext";
 import { Container, Header, Segment } from "semantic-ui-react"; 
@@ -5,19 +12,9 @@ import { Container, Header, Segment } from "semantic-ui-react";
 const Messages = () => {
 
     const { message, setMessage } = useContext(UserContext);
-
-    console.log("message is: ", message)
-
     let content = { }
-
-    if (message.length > 20) {
-        content = { color: 'red',
-                    error: message,
-                    visible: true
-                }
-                setTimeout(() => { setMessage('invisible') }, 5000)
-    }
-
+    
+    // used to let message disappear by rendering it invisible. 
     if (message === "invisible") {
         content = { color: 'green',
                     primary: '...', 
@@ -27,6 +24,17 @@ const Messages = () => {
                 }
     }
 
+    // default error message 
+    // @BUG does NOT work correctly yet! 
+    if (message.length > 20) {
+        content = { color: 'red',
+                    error: message,
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
+    }
+
+    // What follows is a list of preset messages. 
     if (message === "wrongNetwork") {
         content = { color: 'red',
                     primary: 'Change the network to Goerli.',
@@ -80,6 +88,7 @@ const Messages = () => {
                 setTimeout(() => { setMessage('invisible') }, 5000)
     }
     
+    // Rendering actual message. 
     return (
         <Container>
             <Segment textAlign="center" 

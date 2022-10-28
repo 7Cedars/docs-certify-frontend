@@ -243,7 +243,8 @@ The following are functions to interact with ethereum contract.
     try { 
       if (data.length === 0) {
         certificates.push(
-          { id: 0 }
+          { id: 0,
+            description: "empty" }
         )}
 
         for (let i = 0; i < data.length; i++) {
