@@ -10,32 +10,32 @@ const AboutPage = () => {
     
     const { tab, setTab } = useContext(UserContext);
 
-    if (tab == 'About') {
+    if (tab == "About") {
 
     return (        
             <Container className="userInputBox"  >
-                <Segment basic textAlign = 'left' style={{
-                    marginBottom: '3em',
-                    marginTop: '2em',
-                    fontSize: 'large',
+                <Segment basic textAlign = "left" style={{
+                    marginBottom: "3em",
+                    marginTop: "2em",
+                    fontSize: "large",
                     color: "none"
                     }}>
                 <Header
-                    as='h1'
+                    as="h1"
                     content="Certify.doc: social authority on the blockchain" 
                     style={{
-                    fontWeight: 'normal',
+                    fontWeight: "normal",
                     marginBottom: 0,
                     color: "white"
                     }}
                 />
                 <Header
-                    as='h2'
+                    as="h2"
                     style={{
-                    fontWeight: 'normal',
-                    Height: '100px',
-                    overflowY: 'scroll',
-                    marginTop: '1.5em',
+                    fontWeight: "normal",
+                    Height: "100px",
+                    overflowY: "scroll",
+                    marginTop: "1.5em",
                     color: "white"
                     }}
                 > 
@@ -53,7 +53,7 @@ const AboutPage = () => {
                     <br/>
                     Certificates can be used by 
                     <li> Educators to certify the authenticity of their degrees.</li> 
-                    <li> Employers to certify authenticy of employer's statements.</li> 
+                    <li> Employers to certify authenticy of employers statements.</li> 
                     <li> Individuals to authenticate wills and estates. </li> 
                     <br/>
                     In brief, certify.doc relates the social authority behind an ethereum address to a digital document, 
