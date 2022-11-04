@@ -33,6 +33,7 @@ I used this app as an educational project while learning solidity and javascript
 ### Current Dapp (v0.1) 
 - Improve error messaging to users. 
 - Improve interaction with alchemy APIs. 
+- Optimize app for use on mobile phone. 
 - Implement recognition of ENS addresses. 
 - Implement preview for images and (possibly) PDFs.   
 - Implement reading of Eth contract emitted event. 
