@@ -15,12 +15,13 @@ For an extensive explanation of the app and its aims, see the readme file and ab
 import React, { useState, useRef, useEffect } from "react";
 import { ethers } from "ethers"; 
 import { UserContext } from "../components/userContext";
-import { CONTRACT_ADDRESS, abi } from "../constants";
+import { CONTRACT_ADDRESS } from "../constants"; // was also abi 
 import { Contract, providers } from "ethers";
 import { Container, Grid, Card } from "semantic-ui-react"; 
 import Web3Modal from "web3modal";
 import bg from "../assets/images/background3.jpg"
 import 'semantic-ui-css/semantic.min.css';
+import ABI from '../utils/CertifyDoc.json';
 
 // importing components. 
 import NavBar  from "../components/navBar";
@@ -33,6 +34,9 @@ import IssueCertificate from "../components/IssueCertificate"
 
 // Setup
 export default function Home() {
+
+  const contractAddress = "0xB4AfD5AA80a7D8e01BF3e7F3C8E3917a1De3790f";
+  const abi = ABI.abi;
   
   // PART 0: setting all state and ref constants of the page. 
   // keeps track of what tab is selected. 
@@ -47,56 +51,6 @@ export default function Home() {
   const [userInput, setUserInput] = useState('');
   // array to save processed certificates returned from contract.  
   const [certificatesArray, setCertificatesArray] = useState(null);
-  // references to web3 instance. 
-  const web3ModalRef = useRef();
-
-/*
-initiate interaction with wallet. EITHER as provider (wallet not connected = read only) 
-OR as a signer (active mode, can issue and revoke certificates).
-*/
-  
-  // getting a default provider wallet  
-  const getProvider = async () => {
-
-      // create a default, read only, provider. This way dapp is usable without having a web3 wallet. 
-      // somehow, the connection does not quite work correctly yet. 
-      web3ModalRef.current = new ethers.getDefaultProvider( // 
-        "goerli", 
-        // ${process.env.REACT_APP_ALCHEMY_API_KEY} 
-        {alchemy: 'CBr2qzLP-lXUxJFiPwPZvLJIGrv-mMt-'})
-      const web3Provider = web3ModalRef.current
-
-      console.log('web3 provider:', web3Provider)
-      
-      return web3Provider;
-  }
-
-  // getting a specific signer wallet.   
-  const getSigner = async () => {
-
-      web3ModalRef.current = new Web3Modal({
-        network: "goerli",
-        providerOptions: {},
-        disableInjectedProvider: false,
-      });
-
-      const provider = await web3ModalRef.current.connect();
-      const web3Provider = new providers.Web3Provider(provider);  
-
-      console.log('web3 signer:', web3Provider)
-
-      const { chainId } = await web3Provider.getNetwork();
-
-      if (chainId !== 5) {
-        setMessage("wrongNetwork")
-        throw new Error("Change network to Goerli");
-      }
-
-      const signer = web3Provider.getSigner();
-      let walletAddress = await signer.getAddress();
-      setWalletAddress(walletAddress)
-      return signer;
-    }
 
 /* 
 The following are functions to interact with ethereum contract. 
@@ -107,14 +61,19 @@ The following are functions to interact with ethereum contract.
     setLoading('upload')
 
     try {
-      const signer = await getSigner();     
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, signer);       
-      let tx = await dcContract.certify(userInput[0], userInput[1], userInput[2]);
-      setMessage("uploadInProgress")
-      // console.log(tx.hash) 
+      const { ethereum } = window;
 
-      await tx.wait();
-      setMessage("uploadSuccessful")
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const signer = provider.getSigner();
+        const dcContract = new ethers.Contract(contractAddress, abi, signer);           
+        let tx = await dcContract.certify(userInput[0], userInput[1], userInput[2]);
+        setMessage("uploadInProgress")
+        // console.log(tx.hash) 
+
+        await tx.wait();
+        setMessage("uploadSuccessful")
+      }
 
     } catch (err) { 
       console.error(err.message);
@@ -127,10 +86,15 @@ The following are functions to interact with ethereum contract.
   const checkDocHash = async (userInput) => {
 
     try {
-      const provider = await getProvider();
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider); 
-      const certificateIndex = await dcContract.checkDocHash(userInput);
-      return certificateIndex
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const dcContract = new ethers.Contract(contractAddress, abi, provider);
+        const certificateIndex = await dcContract.checkDocHash(userInput);
+
+        return certificateIndex
+      }
 
     } catch (err) {
       console.error(err.message);
@@ -140,12 +104,15 @@ The following are functions to interact with ethereum contract.
   // Checking certificates by address of issuer. Returns an array of indexes.  Signer not required.
   const checkIssuer = async (userInput) => {
     try {
-      const provider = await getProvider();
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      const certificateIndex = await dcContract.checkIssuer(userInput);
+      const { ethereum } = window;
 
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const dcContract = new ethers.Contract(contractAddress, abi, provider);
+        const certificateIndex = await dcContract.checkIssuer(userInput);
+      
       return certificateIndex
-
+      }
     } catch (err) {
       console.error(err.message);
     }
@@ -154,13 +121,15 @@ The following are functions to interact with ethereum contract.
   // Checking certificates by address of recipient. Returns an array of indexes.  Signer not required.
   const checkRecipient = async (userInput) => {
     try {
-      const provider = await getProvider();
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      const certificateIndex = await dcContract.checkRecipient(userInput);
-      // certificateIndex.keys
-     
-      return certificateIndex
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const dcContract = new ethers.Contract(contractAddress, abi, provider);
+        const certificateIndex = await dcContract.checkRecipient(userInput);
       
+      return certificateIndex
+      }
     } catch (err) {
       console.error(err.message);
     }
@@ -172,10 +141,13 @@ The following are functions to interact with ethereum contract.
     console.log("at callCertificate: ", index)
 
     try {
-      const provider = await getProvider();
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, provider);
-      const data = await dcContract.callCertificate(parseInt(index));
+      const { ethereum } = window;
 
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const dcContract = new ethers.Contract(contractAddress, abi, provider);
+        const data = await dcContract.callCertificate(parseInt(index));
+      
       const dateTimeObj = new Date(parseInt(data[4] * 1000))
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
@@ -187,8 +159,9 @@ The following are functions to interact with ethereum contract.
         description: data[3],
         dateTime: new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(dateTimeObj)
       }
-
+      
       return (certificate)
+    }
 
     } catch (err) {
       console.error(err.message);
@@ -200,12 +173,18 @@ The following are functions to interact with ethereum contract.
     setLoading(index)
     
     try {
-      const signer = await getSigner();
-      const dcContract = new Contract(CONTRACT_ADDRESS, abi, signer);
-      let tx = await dcContract.revokeCertificate(index);
-      
-      setMessage("revokeInProgress")
-      await tx.wait();
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const signer = provider.getSigner();
+        const dcContract = new ethers.Contract(contractAddress, abi, signer);
+        
+        let tx = await dcContract.revokeCertificate(index);
+        
+        setMessage("revokeInProgress")
+        await tx.wait();
+      }
 
     } catch (err) {
       console.error(err.message);
@@ -248,6 +227,7 @@ The following are functions to interact with ethereum contract.
         )}
 
         for (let i = 0; i < data.length; i++) {
+          // console.log(data)
           certificates.push(
             await callCertificate( parseInt(data[i]) )
         )}
@@ -275,9 +255,11 @@ The following are functions to interact with ethereum contract.
 
   // at startup calls for a (read only) provider and sets a background image. 
   useEffect(() => {
-    getProvider();
+    // getProvider();
     setMessage('warningTestApp');
-    document.body.style.backgroundImage = `url(${bg.src})`; // `url(${background2})`;
+    // document.body.style.backgroundImage= `url(${bg.src})`; // `url(${background2})`;
+    document.body.style.backgroundImage= `conic-gradient(from 90deg at 10% 15%, aqua, fuchsia, salmon, aqua)`;
+
   }, []);
 
 /*
@@ -292,7 +274,8 @@ Here the actual (one page) app is rendered.
           userInput, setUserInput,
           message, setMessage,
           walletAddress }}> 
-        <NavBar getSigner = {getSigner} /> 
+        <NavBar /> 
+          {/* getSigner = {getSigner} />  */}
         <Messages /> 
         <FrontPage />
         <AboutPage />

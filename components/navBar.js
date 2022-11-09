@@ -9,7 +9,8 @@ import { Button, Grid, Icon, Menu, Segment } from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
 
 // creates the Navbar at the top of the page. 
-const NavBar = ({ getSigner }) => {
+const NavBar = () => { 
+    //  { getSigner }
 
     // navbar interacts with three contextual elements: tab and settab (reading and setting selected tab) 
     // and walletAddress: logging in with a wallet. 
@@ -24,7 +25,8 @@ const NavBar = ({ getSigner }) => {
 
           return (
             <div>
-            <Button  primary onClick={ getSigner } > 
+            <Button  primary > 
+             {/* onClick={ getSigner } >  */}
                 Connect (Currently in Read Only Mode)
             </Button>
             </div>
