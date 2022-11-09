@@ -51,7 +51,7 @@ const NavBar = () => {
     // Renders the navbar. 
     // per item, if clicked, setTab is set to the name of the tab. 
     return (        
-            <Menu fixed='top'  >
+            <Menu >
                 <Menu.Item 
                     name='Home'
                     active={tab === 'Home'}
