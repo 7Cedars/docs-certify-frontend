@@ -258,7 +258,7 @@ The following are functions to interact with ethereum contract.
     // getProvider();
     setMessage('warningTestApp');
     // document.body.style.backgroundImage= `url(${bg.src})`; // `url(${background2})`;
-    document.body.style.backgroundImage= `conic-gradient(from 90deg at 10% 15%, aqua, fuchsia, salmon, aqua)`;
+    document.body.style.backgroundImage= `conic-gradient(from 90deg at 10% 15%, CornflowerBlue, fuchsia, salmon, CornflowerBlue)`;
 
   }, []);
 
@@ -288,12 +288,16 @@ Here the actual (one page) app is rendered.
                 <Grid.Column width = '8' > 
                   <CheckCertificates handleSubmit = {handleSubmit} /> 
                 </Grid.Column> 
-                <Grid.Column width = '8'> 
+                <Grid.Column width = '8'>
+                  <Container style={{
+                      }} >  
                 {/* Note that the certificates are rendered on this top level. 
                 This allows for easy rendering of specific certificates.  */}
-                <Card.Group 
+                      <Card.Group 
                       style={{
                         marginTop: '.1em',
+                        height: "1000px",
+                        overflowY: 'auto'
                       }} > 
                       { certificatesArray ?
                            certificatesArray.map(
@@ -305,6 +309,7 @@ Here the actual (one page) app is rendered.
                           ) 
                       : [null] }
                     </Card.Group> 
+                    </Container>
                 </Grid.Column> 
               </Grid>
             </Container>            

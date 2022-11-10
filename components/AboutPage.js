@@ -19,6 +19,8 @@ const AboutPage = () => {
                     marginBottom: "3em",
                     marginTop: "2em",
                     fontSize: "large",
+                    Height: "100px",
+                    overflowY: "scroll",
                     color: "none"
                     }}>
                 <Header
@@ -34,8 +36,6 @@ const AboutPage = () => {
                     as="h2"
                     style={{
                     fontWeight: "normal",
-                    Height: "100px",
-                    overflowY: "scroll",
                     marginTop: "1.5em",
                     color: "white"
                     }}
