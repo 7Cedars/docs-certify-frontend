@@ -336,14 +336,13 @@ The following are functions to interact with ethereum contract.
     setUserInput('')
   }, [certificatesArray]); 
 
-  // at startup calls for a (read only) provider and sets a background image. 
+  // at startup calls checks if wallet is connected, sets a background image and sets dynamic height for component. 
   useEffect(() => {
     // getProvider();
     setMessage('warningTestApp');
     isWalletConnected()
-    // document.body.style.backgroundImage= `url(${bg.src})`; // `url(${background2})`;
     document.body.style.backgroundImage= `conic-gradient(from 90deg at 10% 15%, CornflowerBlue, fuchsia, salmon, CornflowerBlue)`;
-    setHeightComponent(`${Math.round(document.documentElement.clientWidth * .35)}px`);
+    setHeightComponent(`${Math.round(document.documentElement.clientWidth * .38)}px`);
   }, []);
 
 /*

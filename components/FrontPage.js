@@ -77,10 +77,13 @@ const FrontPage = () => {
                 marginTop: '1.4em',
                 color: "white"
                 }}> 
-                Certify.doc provides certificates of authenticity that are immutable, non-tradable and revokable. 
+                Certify.doc enables people and organisations to vouch for the authenticity of documents. 
                 <br/>
                 <br/>
-                Anoyone can check the authenticy of a document by uploading it in this dapp. 
+                It issues certificates of authenticity that are immutable, non-tradable and revokable. 
+                <br/>
+                <br/>
+                Checking the authenticy of a document is as easy as submitting a document. 
                 </Header>
                 <Button primary 
                         size='huge' 

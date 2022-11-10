@@ -39,16 +39,18 @@ const AboutPage = () => {
                     <br/>
                     Certificates of authenticity
                     <li> cannot be traded or exchanged. They can only revoked.</li>
-                    <li> are accessed by uploading the original document.</li>
+                    <li> are accessed by uploading the original document. They are readily accesible to those that are not familiar with blockchain technology.</li>
                     <br/>
-                    It means that
-                    <li> a person or organisation can issue a certificate to vouch for the authenticity of a document and credibility of another person or organisation.</li>
-                    <li> certificates are readily accesible to those that are not familiar with blockchain technology.</li>
-                    <br/>
-                    Certificates can be used by 
-                    <li> Educators to certify the authenticity of their degrees.</li> 
-                    <li> Employers to certify authenticy of employers statements.</li> 
-                    <li> Individuals to authenticate wills and estates. </li> 
+                    {/* It means that */}
+                    {/* <li> a person or organisation can issue a certificate to vouch for the authenticity of a document. </li>
+                    <li> this document cannot be changed, only revoked. </li>
+                    <li> certificates can also be used to give credibility of another person or organisation.</li>
+                    <li> certificates are readily accesible to those that are not familiar with blockchain technology.</li> */}
+                    {/* <br/> */}
+                    Some possible use cases are
+                    <li> Educators that certify the authenticity of their degrees.</li> 
+                    <li> Employers that certify authenticy of employers statements.</li> 
+                    <li> Individuals that authenticate their wills. </li> 
                     <br/>
                     In brief, certify.doc relates the social authority behind an ethereum address to a digital document, 
                     and expresses a relationship between two social actors.
