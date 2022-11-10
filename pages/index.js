@@ -37,7 +37,7 @@ export default function Home() {
   // PART 0: setting all state and ref constants of the page. 
   // keeps track of what tab is selected. 
   const [tab, setTab] = useState('Home');
-  const [heightComponent, setHeightComponent] = useState('1000px');
+  const [heightComponent, setHeightComponent] = useState('10px');
   // keeps track if app is loading (most often waiting for blockchain interaction) 
   const [loading, setLoading] = useState();
   // keeps track of meesaging to users. Both error and success messages.  
@@ -343,7 +343,7 @@ The following are functions to interact with ethereum contract.
     isWalletConnected()
     // document.body.style.backgroundImage= `url(${bg.src})`; // `url(${background2})`;
     document.body.style.backgroundImage= `conic-gradient(from 90deg at 10% 15%, CornflowerBlue, fuchsia, salmon, CornflowerBlue)`;
-    setHeightComponent(`${Math.round(document.documentElement.clientWidth * .50)}px`);
+    setHeightComponent(`${Math.round(document.documentElement.clientWidth * .35)}px`);
   }, []);
 
 /*
@@ -374,8 +374,6 @@ Here the actual (one page) app is rendered.
                   <CheckCertificates handleSubmit = {handleSubmit} /> 
                 </Grid.Column> 
                 <Grid.Column width = '8'>
-                  <Container style={{
-                      }} >  
                 {/* Note that the certificates are rendered on this top level. 
                 This allows for easy rendering of specific certificates.  */}
                       <Card.Group 
@@ -394,7 +392,6 @@ Here the actual (one page) app is rendered.
                           ) 
                       : [null] }
                     </Card.Group> 
-                    </Container>
                 </Grid.Column> 
               </Grid>
             </Container>            

@@ -13,15 +13,10 @@ const AboutPage = () => {
 
     if (tab == "About") {
 
-    return (        
+    return (  
             <Container className="userInputBox" >
                 <Segment basic textAlign = "left" style={{
-                    marginBottom: "3em",
-                    marginTop: "2em",
                     fontSize: "large",
-                    color: "none",
-                    Height: heightComponent,
-                    overflowY: "auto"
                     }}>
                 <Header
                     as="h1"
@@ -32,10 +27,8 @@ const AboutPage = () => {
                     color: "white"
                     }}
                 />
-                <Header
-                    as="h2"
+                <Container 
                     style={{
-                        fontWeight: "normal",
                         marginTop: "1.5em",
                         color: "white"
                     }}
@@ -63,7 +56,8 @@ const AboutPage = () => {
                     <br/>
                     {/* Still need to include links here. */}
                     Check out the github repository for the react frontend and solidity backend.  
-                    </Header>
+
+                    </Container>
                 </Segment>
             </Container>
         )

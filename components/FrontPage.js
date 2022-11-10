@@ -74,8 +74,6 @@ const FrontPage = () => {
                 as='h2'
                 style={{
                 fontWeight: 'normal',
-                Height: '100px',
-                overflowY: 'scroll',
                 marginTop: '1.4em',
                 color: "white"
                 }}> 

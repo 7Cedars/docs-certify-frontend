@@ -44,15 +44,26 @@ const CheckCertificates = ({ handleSubmit }) => {
                         
                         <Header as ="h2"> 
                         { tab == 'Issued_Certs' ? 
-                          'What certificates did an Ethereum address issue?' : 
-                          'What certificates did an Ethereum address receive?'                
+                          'What certificates did an Eth address issue?' : 
+                          'What certificates did an Eth address receive?'                
                         }
                         </Header>
                         <Container textAlign = 'center'> 
-                          <Icon name='user outline' size = 'huge' style={{
-                                marginTop: '.2em', marginBottom: '.5em'
-                                }}>
-                          </Icon>
+                        { tab == 'Issued_Certs' ? 
+                          <Icon name='user outline' 
+                                size = 'huge'
+                                style={{
+                                    marginTop: '.2em', 
+                                    marginBottom: '.5em'
+                              }} /> : 
+                            <Icon name='checkmark' 
+                                  size = 'huge' 
+                                  style={{
+                                    marginTop: '.2em', 
+                                    marginBottom: '.5em'
+                              }} />   
+                        }
+                          
                         </Container>
                         <Form onSubmit = { handleSubmit } >                                     
                           <Segment textAlign = 'center' style={{ }}>

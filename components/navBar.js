@@ -75,7 +75,8 @@ const NavBar = ({ connectWallet, changeNetwork }) => {
                     active={tab === 'Home'}
                     onClick={() => setTab('Home')}
                 >
-                    <Icon name='checkmark' size = 'large'/>
+                    Home
+                    {/* <Icon name='checkmark' size = 'large'/> */}
                 </Menu.Item>  
                 <Menu.Item 
                     name='About'

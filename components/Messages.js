@@ -125,7 +125,7 @@ const Messages = () => {
             <Segment textAlign="center" 
                 color = {content.color} 
                 style = {{
-                marginTop: '4.5em',
+                marginTop: '1em',
                 fontSize: 'large', 
                 opacity: content.visible? '100%' : '0%'
             }}>
