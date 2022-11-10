@@ -12,14 +12,10 @@ For an extensive explanation of the app and its aims, see the readme file and ab
 */ 
 
 // importing dependencies. 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers } from "ethers"; 
 import { UserContext } from "../components/userContext";
-import { CONTRACT_ADDRESS } from "../constants"; // was also abi 
-import { Contract, providers } from "ethers";
 import { Container, Grid, Card } from "semantic-ui-react"; 
-import Web3Modal from "web3modal";
-import bg from "../assets/images/background3.jpg"
 import 'semantic-ui-css/semantic.min.css';
 import ABI from '../utils/CertifyDoc.json';
 
@@ -41,12 +37,15 @@ export default function Home() {
   // PART 0: setting all state and ref constants of the page. 
   // keeps track of what tab is selected. 
   const [tab, setTab] = useState('Home');
+  const [heightComponent, setHeightComponent] = useState('1000px');
   // keeps track if app is loading (most often waiting for blockchain interaction) 
   const [loading, setLoading] = useState();
   // keeps track of meesaging to users. Both error and success messages.  
   const [message, setMessage] = useState('invisible');
   // keeps track if a wallet has been connected to the app, and if so - what address.  
   const [walletAddress, setWalletAddress] = useState(null);
+  // keeps track if a wallet has a linked Ethereum Name.  
+  const [ensName, setEnsName] = useState(null);
   // array to store user input. 
   const [userInput, setUserInput] = useState('');
   // array to save processed certificates returned from contract.  
@@ -55,6 +54,89 @@ export default function Home() {
 /* 
 The following are functions to interact with ethereum contract. 
 */
+
+  // Wallet connection logic -- see Week3 Alchemy's Road2Web3 
+  const isWalletConnected = async () => {
+    try {
+      const { ethereum } = window;
+
+      const accounts = await ethereum.request({ method: 'eth_accounts' })
+      const provider = new ethers.providers.Web3Provider(ethereum, "any");
+      const { chainId }  = await provider.getNetwork();
+      const ens = await provider.lookupAddress(accounts[0]);
+
+      console.log("chainId: ", chainId, 
+                  "account: ", accounts);
+      
+      if (accounts.length > 0 && chainId == 5 ) { 
+        setWalletAddress(accounts[0]);
+        if (ens) { setEnsName(ens) }      
+      } 
+      if (accounts.length > 0 && chainId != 5 ) { 
+        setMessage('wrongNetwork');
+        setWalletAddress('wrongNetwork');
+      }
+      else {
+        console.log("No connected wallet.");
+      }
+      console.log("walletAddress:", walletAddress, 
+                  "ens: ", ens)
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  }
+
+  // Wallet connecting wallet (on click button) -- see Week3 Alchemy's Road2Web3 
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        setMessage("MetamaskNotInstalled");
+      }
+
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts'});
+      const provider = new ethers.providers.Web3Provider(ethereum, "any");
+      const { chainId }  = await provider.getNetwork();
+      const ens = await provider.lookupAddress(accounts[0]);
+
+      if (chainId == 5) {
+        setWalletAddress(accounts[0]);
+        if (ens) { setEnsName(ens) }  
+      } else {
+        setMessage('wrongNetwork');
+        setWalletAddress('wrongNetwork');
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Changing network (on click button) To be Implemented. 
+  // For now, this throws an error.. 
+  const changeNetwork = async () => {
+    try {
+        const { ethereum } = window;
+        
+        ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [{
+              chainId: "0x5",
+              rpcUrls: ["https://eth-goerli.g.alchemy.com/v2/"],
+              chainName: "Goerli Test Network",
+              nativeCurrency: {
+                  name: "GoerliETH",
+                  symbol: "GoerliETH",
+                  decimals: 18
+              },
+              blockExplorerUrls: ["https://goerli.etherscan.io"]
+          }]
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // issuing a new certificate. Signer is required. 
   const certify = async (userInput) => {
@@ -138,7 +220,8 @@ The following are functions to interact with ethereum contract.
   // Takes an array of indexes, and calls each certificate. No signer required.
   const callCertificate = async (index) => {
 
-    console.log("at callCertificate: ", index)
+    console.log("at callCertificate: ", index,
+                "heightComponent: ", heightComponent)
 
     try {
       const { ethereum } = window;
@@ -257,9 +340,10 @@ The following are functions to interact with ethereum contract.
   useEffect(() => {
     // getProvider();
     setMessage('warningTestApp');
+    isWalletConnected()
     // document.body.style.backgroundImage= `url(${bg.src})`; // `url(${background2})`;
     document.body.style.backgroundImage= `conic-gradient(from 90deg at 10% 15%, CornflowerBlue, fuchsia, salmon, CornflowerBlue)`;
-
+    setHeightComponent(`${Math.round(document.documentElement.clientWidth * .50)}px`);
   }, []);
 
 /*
@@ -269,13 +353,14 @@ Here the actual (one page) app is rendered.
   return (
       <div > 
         <UserContext.Provider value={{ 
-          tab, setTab,
+          tab, setTab, heightComponent, 
+          ensName, 
           loading, setLoading, 
           userInput, setUserInput,
           message, setMessage,
           walletAddress }}> 
-        <NavBar /> 
-          {/* getSigner = {getSigner} />  */}
+        <NavBar connectWallet = {connectWallet} 
+                changeNetwork = {changeNetwork} /> 
         <Messages /> 
         <FrontPage />
         <AboutPage />
@@ -296,7 +381,7 @@ Here the actual (one page) app is rendered.
                       <Card.Group 
                       style={{
                         marginTop: '.1em',
-                        height: "1000px",
+                        height: heightComponent,
                         overflowY: 'auto'
                       }} > 
                       { certificatesArray ?

@@ -9,19 +9,19 @@ import { Container, Header, Segment } from "semantic-ui-react";
 
 const AboutPage = () => {
     
-    const { tab, setTab } = useContext(UserContext);
+    const { tab, setTab, heightComponent } = useContext(UserContext);
 
     if (tab == "About") {
 
     return (        
-            <Container className="userInputBox"  >
+            <Container className="userInputBox" >
                 <Segment basic textAlign = "left" style={{
                     marginBottom: "3em",
                     marginTop: "2em",
                     fontSize: "large",
-                    Height: "100px",
-                    overflowY: "scroll",
-                    color: "none"
+                    color: "none",
+                    Height: heightComponent,
+                    overflowY: "auto"
                     }}>
                 <Header
                     as="h1"
@@ -35,9 +35,9 @@ const AboutPage = () => {
                 <Header
                     as="h2"
                     style={{
-                    fontWeight: "normal",
-                    marginTop: "1.5em",
-                    color: "white"
+                        fontWeight: "normal",
+                        marginTop: "1.5em",
+                        color: "white"
                     }}
                 > 
                     Certify.doc provides a single utility: It issues a record on the ethereum blockchain that relates two addresses (an issuer and recipient) to an offline document. 

@@ -37,11 +37,25 @@ const Messages = () => {
     if (message === "wrongNetwork") {
         content = { color: 'red',
                     primary: 'Change the network to Goerli.',
-                    secondary: 'This app needs MetaMask to be installed.',
+                    secondary: 'This is a test app that runs on the Goerli test network.',
                     visible: true
                 }
                 setTimeout(() => { setMessage('invisible') }, 5000)
     }
+    if (message === "notConnected") {
+        content = { color: 'red',
+                    primary: 'Please connect your wallet.',
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
+    }
+    if (message === "MetamaskNotInstalled") {
+        content = { color: 'red',
+                    primary: 'Please connect your wallet.',
+                    visible: true
+                }
+                setTimeout(() => { setMessage('invisible') }, 5000)
+    }   
 
     if (message === "warningTestApp") {
         content = { color: 'red',

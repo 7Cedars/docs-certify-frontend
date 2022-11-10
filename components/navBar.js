@@ -9,12 +9,12 @@ import { Button, Grid, Icon, Menu, Segment } from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
 
 // creates the Navbar at the top of the page. 
-const NavBar = () => { 
+const NavBar = ({ connectWallet, changeNetwork }) => { 
     //  { getSigner }
 
     // navbar interacts with three contextual elements: tab and settab (reading and setting selected tab) 
     // and walletAddress: logging in with a wallet. 
-    const { tab, setTab, walletAddress } = useContext(UserContext);
+    const { tab, setTab, walletAddress, ensName } = useContext(UserContext);
 
     // The login button changes appearance with user being logged in or not.
     // Login is assessed by (non)existance of const walletAddress. 
@@ -25,26 +25,44 @@ const NavBar = () => {
 
           return (
             <div>
-            <Button  primary > 
-             {/* onClick={ getSigner } >  */}
-                Connect (Currently in Read Only Mode)
+            <Button  primary 
+                onClick = { connectWallet } >
+                Connect (Currently in Read Only Mode) 
             </Button>
             </div>
           );
         }
-    
-        // If wallet is  connected, return a green button that states wallet connected. 
-        // Button does ntot have any functionality at the moment. 
-        if (walletAddress) {
 
+        // If wallet is on the wron network, return a red button requesting to change network. 
+        // Button does not have any functionality at the moment. (hence basic color scheme)
+        if (walletAddress == 'wrongNetwork') {
             return (
             <div> 
-              <Button  positive > 
-                Connected to: {walletAddress.substring(0,5)}...{walletAddress.substring(38,42)}  
-                {/* .substring(0,5) */}
+              <Button basic color = "red" >
+                Incorrect network. Please change to Goerli. 
               </Button>
               </div>
             );
+          } else {
+            // If wallet is  connected, return a green button that states wallet connected. 
+            // Button does not have any functionality at the moment. (hence basic color scheme)
+            if ( ensName ) {
+            return (
+                <div> 
+                <Button basic color = "green"  > 
+                    Connected to: { ensName }
+                </Button>
+                </div>
+            );
+            } else {
+                return (
+                    <div> 
+                    <Button basic color = "green"  > 
+                        Connected to: {walletAddress.substring(0,5)}...{walletAddress.substring(38,42)}  
+                    </Button>
+                    </div>
+                );
+            }
           }
         }
 
